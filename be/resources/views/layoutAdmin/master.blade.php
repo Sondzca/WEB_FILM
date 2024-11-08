@@ -1,80 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ asset('layoutAdmin/admin.css') }}"> <!-- Include Tailwind CSS -->
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}"> <!-- Custom CSS -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url('css/style.css') }}">
+    <link rel="stylesheet" href="{{ url('css/materialdesignicons.min.css') }}">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('js/chart.js') }}"></script>
+
+    
+
+    <title>@yield('title')</title>
 </head>
+
 <body>
-    <div class="profile-page-wrapper w-full">
-        <div class="">
-            <div class="">
-                <div class="flex justify-between border-b-2 bg-gray-100 border-solid border-gray-200 p-6 shadow-sm fixed w-full z-60">
-                    <h1 class="text-black text-3xl">
-                        <a href="/">TICKETBOX</a>
-                    </h1>
-                    <div class="text-right">
-                        <!-- Wallet Component Here -->
-                    </div>
-                </div>
-                <div class="w-full bg-white px-10 py-24">
-                    <div class="title-area w-full flex justify-between items-center fixed">
-                        <a href="/Admin"><h1 class="text-[22px] font-bold text-qblack">Your Dashboard</h1></a> 
-                    </div>
-                    <div class="profile-wrapper w-full flex space-x-10 mt-[3.5rem]">
-                        <div class="w-[236px] min-h-[600px] border-r border-[rgba(0, 0, 0, 0.1)]">
-                            <div class="flex flex-col space-y-10 fixed h-screen overflow-y-auto no-scrollbar">
-                                <div class="item group">
-                                    <a href="Active">
-                                        <div class="flex space-x-3 items-center text-qgray hover:text-red-500">
-                                            <span class="fa-solid fa-sliders"></span>
-                                            <span class="font-normal text-base">Active</span>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="item group">
-                                    <a href="collection">
-                                        <div class="flex space-x-3 items-center text-qgray hover:text-red-500">
-                                            <span class="fa-solid fa-image"></span>
-                                            <span class="font-normal text-base">Collection</span>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="item group">
-                                    <a href="category">
-                                        <div class="flex space-x-3 items-center text-qgray hover:text-red-500">
-                                            <span class="fa-solid fa-image"></span>
-                                            <span class="font-normal text-base">Category</span>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="item group">
-                                    <a href="ticket">
-                                        <div class="flex space-x-3 items-center text-qgray hover:text-red-500">
-                                            <span class="fa-solid fa-image"></span>
-                                            <span class="font-normal text-base">Ticket</span>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="item group">
-                                    <a href="events">
-                                        <div class="flex space-x-3 items-center text-qgray hover:text-red-500">
-                                            <span class="fa-solid fa-image"></span>
-                                            <span class="font-normal text-base">Events</span>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
+
+    <div class="container-scroller">
+        @include('LayoutAdmin.Nav')
+        <div class="container-fluid page-body-wrapper">
+            @include('LayoutAdmin.Sidebar')
+            <div class="main-panel">
+                <div class="container mt-3">
+                    @if ($errors->any())
+                        <div class="alert alert-danger text-center">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
-                        <div class="flex-1">
-                            <!-- Content Here -->
+                    @endif
+
+                    @if (session('success'))
+                        <div class="alert alert-success text-center">
+                            {{ session('success') }}
                         </div>
-                    </div>
+                    @endif
+
+                    @if (session('info'))
+                        <div class="alert alert-info">
+                            {{ session('info') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+
+                    @yield('content_admin')
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="{{ url('js/chart.umd.js') }}"></script>
+    <script src="{{ url('js/dashboard.js') }}"></script>
+    <script src="{{ url('js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ url('js/misc.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
 </body>
+
 </html>

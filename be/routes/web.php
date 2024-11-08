@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NFTController;
-
+use App\Http\Controllers\TicketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,4 +28,6 @@ Route::get('/create-nft', [NFTController::class, 'createNFT']);
 
 
 
-Route::get('/admin/dashboard', [AdminController::class, 'index']);
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::resource('categories', CategoryController::class);
+Route::resource('tickets', TicketController::class);

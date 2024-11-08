@@ -2,60 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
-use App\Models\Item;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function addCate(CategoryRequest $request)
-    {
-
-        try {;
-            $name = $request->input('name');
-            $Cate = Category::create([
-                'name' => $name,
-            ]);
-            return response()->json(['message' => 'Thêm mới thành công!', 'data' => $Cate]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Lỗi xảy ra', 'error' => $e->getMessage()], 500);
-        }
-    }
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $categories = Category::all();
-        return response()->json($categories);
+        $categories = Category::withCount('ticket')->paginate(5);
+
+        return view('categories.index', compact('categories'));
     }
 
-    public function getCateById($id)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
-        $cate = Category::where('id', $id)->get();
-        if ($cate->isEmpty()) {
-            return response()->json(['message' => 'Cate không tồn tại'], 404);
-        }
-
-        return response()->json(['tickets' => $cate], 200);
+        return view('categories.create');
     }
 
-    public function update(CategoryRequest $request, $id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $name = $request->input('name');
-        $category = Category::findOrFail($id);
-        $category->update([
-            'name' => $name,
+        $request->validate([
+            'name' => 'required|unique:categories|max:255',
         ]);
-
-        return response()->json(['message' => 'Cập nhật thành công!', 'data' => $category]);
+        Category::create($request->all());
+        return redirect()->route('categories.index')->with('success', 'Thêm mới thành công');
     }
 
-    public function destroy($id)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Category $category)
     {
-        $category = Category::findOrFail($id);
-        $category->delete();
-
-        return response()->json(['message' => 'Xóa thành công!']);
+        return view('categories.show', compact('category'));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Category $category)
+    {
+        return view('categories.edit', compact('category'));
+    }
 
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Category $category)
+    {
+        $request->validate([
+            'name'  => 'required|unique:categories,name,' . $category->id . '|max:255',
+        ]);
+        $category->update($request->all());
+        return redirect()->route('categories.index')->with('success', 'Sửa thành công');
+    }
 
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Category $category)
+    {
+        // Kiểm tra xem danh mục có sản phẩm nào không
+        if ($category->products()->count() > 0) {
+            return back()->with('error', 'Không thể xóa danh mục này vì có sản phẩm liên quan.');
+        }
+    
+        // Nếu không có sản phẩm liên quan, thực hiện xóa
+        $category->delete();
+        return back()->with('success', 'Xóa thành công');
+    }
+    
 }
