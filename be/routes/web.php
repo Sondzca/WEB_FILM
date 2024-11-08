@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NFTController;
 
@@ -23,3 +24,7 @@ Route::get('/create-collection-form', [NFTController::class, 'createCollectionFo
 Route::post('/create-collection', [NFTController::class, 'createCollection']);
 Route::get('/create', [NFTController::class, 'createForm']);
 Route::get('/create-nft', [NFTController::class, 'createNFT']);
+
+
+
+Route::get('/admin/dashboard', [AdminController::class, 'index']);
