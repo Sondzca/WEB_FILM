@@ -20,7 +20,7 @@ use App\Http\Controllers\TicketController;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/client', [ClientController::class, 'clients.index']);
 Route::get('/create-collection-form', [NFTController::class, 'createCollectionForm']);
 Route::post('/create-collection', [NFTController::class, 'createCollection']);
 Route::get('/create', [NFTController::class, 'createForm']);
