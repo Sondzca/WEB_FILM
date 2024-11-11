@@ -3,7 +3,7 @@
         <li class="nav-item nav-profile dropdown no-arrow">
             <a href="#" class="nav-link d-flex align-items-center" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <div class="nav-profile-image">
-                    <img src="{{asset('assets/images/logo-mini.svg')}}" alt="profile" class="img-profile rounded-circle" style="width: 80px; height: 35px;" /> <!-- Thay đổi kích thước ở đây -->
+                    <img src="#" alt="avatar" class="img-profile rounded-circle" style="width: 80px; height: 35px;" /> <!-- Thay đổi kích thước ở đây -->
                     <span class="login-status online"></span>
                 </div>
                 <div class="nav-profile-text d-flex flex-column">

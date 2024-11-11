@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\NFTController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TicketController;
+use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,15 +18,12 @@ use App\Http\Controllers\TicketController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/client', [ClientController::class, 'clients.index']);
-Route::get('/create-collection-form', [NFTController::class, 'createCollectionForm']);
-Route::post('/create-collection', [NFTController::class, 'createCollection']);
-Route::get('/create', [NFTController::class, 'createForm']);
-Route::get('/create-nft', [NFTController::class, 'createNFT']);
-
+Route::get('/', [ClientController::class, 'index'])->name('index');
+Route::get('/shop', [ClientController::class, 'shop'])->name('shop');
+Route::get('/carts', [ClientController::class, 'carts'])->name('carts');
+Route::get('/contact', [ClientController::class, 'contact'])->name('contact');
+Route::get('/about', [ClientController::class, 'about'])->name('about');
+Route::get('/detail', [ClientController::class, 'detail'])->name('detail');
 
 
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
