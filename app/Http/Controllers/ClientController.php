@@ -33,4 +33,8 @@ class ClientController extends Controller
     {
         return view('shop.detail');
     }
+    public function checkout()
+    {
+        return view('carts.checkout');
+    }
 }

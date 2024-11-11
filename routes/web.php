@@ -24,6 +24,7 @@ Route::get('/carts', [ClientController::class, 'carts'])->name('carts');
 Route::get('/contact', [ClientController::class, 'contact'])->name('contact');
 Route::get('/about', [ClientController::class, 'about'])->name('about');
 Route::get('/detail', [ClientController::class, 'detail'])->name('detail');
+Route::get('/checkout', [ClientController::class, 'checkout'])->name('checkout');
 
 
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');

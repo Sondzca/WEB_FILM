@@ -9,7 +9,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12 mb-0">
-                    <a href="{{ asset('client/index.html') }}">Home</a> 
+                    <a href="{{ route('index') }}">Home</a> 
                     <span class="mx-2 mb-0">/</span> 
                     <strong class="text-black">Contact</strong>
                 </div>
