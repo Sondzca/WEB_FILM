@@ -13,7 +13,7 @@ class NFTRequest extends BaseRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**

@@ -8,24 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Ticket extends Model
 {
     use HasFactory;
-    protected $table = 'Ticket';
-    
     protected $fillable = [
         'name',
-        'urlimage',
-        'ngayphathanh',
-        'ngayketthuc',
-        'diachi',
-        'giatien',
-        'mota',
+        'category_id',
+        'image',
+        'startday',
+        'enday',
+        'price',
+        'description',
+        'quantity',
+        'is_active',
         'nguoitochuc',
-        'noitochuc',
-        'cateID'
+        'address',
     ];
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'cateID');
+        return $this->belongsTo(Category::class);
     }
    
     

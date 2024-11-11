@@ -28,7 +28,8 @@
                 <tr>
                     <td>{{ $category->id }}</td>
                     <td>{{ $category->name }}</td>
-                    <td>{{ $category->tickets_count }}</td>
+                    <td>{{ $category->tickets_count > 0 ? $category->tickets_count : 'N/A' }}</td>
+
                     <td>{{ $category->created_at->format('d/m/Y H:i') }}</td>
                     <td>{{ $category->updated_at->format('d/m/Y H:i') }}</td>
                     <td>

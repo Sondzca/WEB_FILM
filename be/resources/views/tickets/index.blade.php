@@ -1,17 +1,14 @@
 @extends('LayoutAdmin.master')
 
 @section('title')
-    Dashboard
+    Danh sách vé xem phim
 @endsection
 
 @section('content_admin')
 <div class="container">
-    <h2>Tickets List</h2>
-    <a href="{{ route('tickets.create') }}" class="btn btn-success mb-3">Add New Ticket</a>
+    <h2 class="text-center">Danh sách vé xem phim</h2>
+    <a href="{{ route('tickets.create') }}" class="btn btn-success mb-3">Thêm mới</a>
     
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
 
     <table class="table table-bordered">
         <thead>
@@ -22,11 +19,12 @@
                 <th>Image</th>
                 <th>Start Day</th>
                 <th>End Day</th>
-                <th>Address</th>
+                <th>Quantity</th>
                 <th>Price</th>
                 <th>Description</th>
                 <th>Organizer</th>
                 <th>Location</th>
+                <th>Is Active</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -37,13 +35,19 @@
                 <td>{{ $ticket->category->name ?? 'No Category' }}</td>
                 <td>{{ $ticket->name }}</td>
                 <td><img src="{{ asset('storage/' . $ticket->image) }}" alt="{{ $ticket->name }}" width="50"></td>
-                <td>{{ $ticket->startday }}</td>
-                <td>{{ $ticket->enday }}</td>
-                <td>{{ $ticket->address }}</td>
-                <td>{{ $ticket->price }}</td>
+                <td>{{ \Carbon\Carbon::parse($ticket->startday)->format('d/m/Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($ticket->enday)->format('d/m/Y') }}</td>
+                
+                <td>{{ $ticket->quantity }}</td>
+                <td>{{ number_format($ticket->price, 2) }} VND</td>
                 <td>{{ $ticket->description }}</td>
                 <td>{{ $ticket->nguoitochuc }}</td>
-                <td>{{ $ticket->noitochuc }}</td>
+                <td>{{ $ticket->address }}</td>
+                <td>
+                    <span class="badge {{ $ticket->is_active ? 'badge-success' : 'badge-danger' }}">
+                        {{ $ticket->is_active ? 'Active' : 'Inactive' }}
+                    </span>
+                </td>
                 <td>
                     <a href="{{ route('tickets.edit', $ticket->id) }}" class="btn btn-primary btn-sm">Edit</a>
                     <form action="{{ route('tickets.destroy', $ticket->id) }}" method="POST" style="display:inline;">

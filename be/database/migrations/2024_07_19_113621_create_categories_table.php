@@ -14,9 +14,9 @@ class CreateCategoriesTable extends Migration
     public function up()
     {
         Schema::create('categories', function (Blueprint $table) {
-            $table->id(); // ID tự động tăng
-            $table->string('name', 50); // cột name có độ dài 50 kí tự
-            $table->timestamps(); // tự động tạo cột created_at và updated_at
+            $table->id(); 
+            $table->string('name', 50); 
+            $table->timestamps(); 
         });
     }
 

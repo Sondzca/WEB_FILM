@@ -2,48 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TicketRequest;
+
 use App\Models\Category;
 use App\Models\Ticket;
-use Illuminate\Support\Facades\Request;
-
-use function Psy\debug;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
     public function index()
     {
-        $tickets = Ticket::with('category')->paginate(10); // Eager load categories and paginate
+        $tickets = Ticket::with('category')->paginate(10);
         return view('tickets.index', compact('tickets'));
     }
     public function create()
     {
-        $categories = Category::all(); // Assuming each ticket belongs to a category
+        $categories = Category::all();
         return view('tickets.create', compact('categories'));
     }
 
-    // Store a new ticket in the database
+
     public function store(Request $request)
     {
-        $request->validate([
+
+        $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:50',
-            'image' => 'required|string|max:255',
+            'name' => 'required|max:255',
+            'image' => 'required|image',
             'startday' => 'required|date',
             'enday' => 'required|date|after:startday',
-            'address' => 'required|string|max:100',
-            'price' => 'required|numeric|min:0|max:999999.99',
-            'description' => 'nullable|string|max:250',
-            'nguoitochuc' => 'nullable|string',
-            'noitochuc' => 'nullable|string',
+            'address' => 'required|max:255',
+            'quantity' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|max:1024',
+            'nguoitochuc' => 'nullable|max:255',
         ]);
 
-        Ticket::create($request->all());
+        $data['is_active'] = $request->filled('is_active') ? 1 : 0;
 
-        return redirect()->route('tickets.index')->with('success', 'Ticket created successfully.');
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('ticket', 'public');
+        }
+
+
+        Ticket::create($data);
+
+        return redirect()->route('tickets.index')->with('success', 'Ticket created successfully!');
     }
 
-    // Show the form to edit an existing ticket
+
     public function edit(Ticket $ticket)
     {
         $categories = Category::all();
@@ -53,23 +60,34 @@ class TicketController extends Controller
     // Update an existing ticket in the database
     public function update(Request $request, Ticket $ticket)
     {
-        $request->validate([
+        $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:50',
-            'image' => 'required|string|max:255',
+            'name' => 'required|max:255',
+            'image' => 'nullable|image', 
             'startday' => 'required|date',
             'enday' => 'required|date|after:startday',
-            'address' => 'required|string|max:100',
-            'price' => 'required|numeric|min:0|max:999999.99',
-            'description' => 'nullable|string|max:250',
-            'nguoitochuc' => 'nullable|string',
-            'noitochuc' => 'nullable|string',
+            'address' => 'required|max:255',
+            'quantity' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|max:1024',
+            'nguoitochuc' => 'nullable|max:255',
         ]);
-
-        $ticket->update($request->all());
-
+    
+        $data['is_active'] = $request->filled('is_active') ? 1 : 0; 
+        
+        if ($request->hasFile('image')) {
+            if ($ticket->image) {
+                Storage::delete($ticket->image);
+            }
+    
+            $data['image'] = $request->file('image')->store('ticket', 'public');
+        }
+    
+        $ticket->update($data);
+    
         return redirect()->route('tickets.index')->with('success', 'Ticket updated successfully.');
     }
+    
 
     // Delete a ticket
     public function destroy(Ticket $ticket)
