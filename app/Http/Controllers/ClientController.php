@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
     public function index()
     {
-        return view('shop.index');
+        $tickets = Ticket::all();
+        return view('shop.index', compact('tickets'));
     }
 
     public function shop()
     {
-        return view('shop.shop');
+        $categories = Category::withCount('tickets')->get();
+        $tickets = Ticket::all();
+
+        return view('shop.shop', compact('categories', 'tickets'));
     }
 
     public function carts()

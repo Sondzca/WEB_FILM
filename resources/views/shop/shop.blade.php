@@ -9,8 +9,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12 mb-0">
-                    <a href="{{ route('index') }}">Home</a> 
-                    <span class="mx-2 mb-0">/</span> 
+                    <a href="{{ route('index') }}">Home</a>
+                    <span class="mx-2 mb-0">/</span>
                     <strong class="text-black">Shop</strong>
                 </div>
             </div>
@@ -55,21 +55,22 @@
                         </div>
                     </div>
                     <div class="row mb-5">
-                        @foreach (['cloth_1.jpg', 'shoe_1.jpg', 'cloth_2.jpg', 'cloth_3.jpg', 'shoe_1.jpg', 'cloth_1.jpg', 'shoe_1.jpg', 'cloth_2.jpg', 'cloth_3.jpg', 'shoe_1.jpg', 'cloth_1.jpg', 'cloth_2.jpg'] as $image)
-                        <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up">
-                            <div class="block-4 text-center border">
-                                <figure class="block-4-image">
-                                    <a href="shop-single.html">
-                                        <img src="{{ asset('client/images/' . $image) }}" alt="Image placeholder" class="img-fluid">
-                                    </a>
-                                </figure>
-                                <div class="block-4-text p-4">
-                                    <h3><a href="shop-single.html">Product Name</a></h3>
-                                    <p class="mb-0">Description here</p>
-                                    <p class="text-primary font-weight-bold">$50</p>
+                        @foreach ($tickets as $ticket)
+                            <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up">
+                                <div class="block-4 text-center border">
+                                    <figure class="block-4-image">
+                                        <a href="{{ route('ticket.show', $ticket->id) }}">
+                                            <img src="{{ asset('storage/' . $ticket->image) }}" alt="Image placeholder"
+                                                class="img-fluid">
+                                        </a>
+                                    </figure>
+                                    <div class="block-4-text p-4">
+                                        <h3> <a href="{{ route('ticket.show', $ticket->id) }}">
+                                                {{ $ticket->name }}</a></h3>
+                                        <p class="text-primary font-weight-bold">${{ $ticket->price }}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         @endforeach
                     </div>
                     <div class="row" data-aos="fade-up">
@@ -93,20 +94,22 @@
                     <div class="border p-4 rounded mb-4">
                         <h3 class="mb-3 h6 text-uppercase text-black d-block">Categories</h3>
                         <ul class="list-unstyled mb-0">
-                            <li class="mb-1"><a href="#" class="d-flex"><span>Men</span> <span
-                                        class="text-black ml-auto">(2,220)</span></a></li>
-                            <li class="mb-1"><a href="#" class="d-flex"><span>Women</span> <span
-                                        class="text-black ml-auto">(2,550)</span></a></li>
-                            <li class="mb-1"><a href="#" class="d-flex"><span>Children</span> <span
-                                        class="text-black ml-auto">(2,124)</span></a></li>
+                            @foreach ($categories as $category)
+                                <li class="mb-1">
+                                    <a href="#" class="d-flex">
+                                        <span>{{ $category->name }}</span>
+                                        <span class="text-black ml-auto">({{ $category->tickets_count }})</span>
+                                    </a>
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
 
                     <div class="border p-4 rounded mb-4">
                         <h3 class="mb-3 h6 text-uppercase text-black d-block">Filter by Price</h3>
                         <div id="slider-range" class="border-primary"></div>
-                        <input type="text" name="text" id="amount"
-                            class="form-control border-0 pl-0 bg-white" disabled="" />
+                        <input type="text" name="text" id="amount" class="form-control border-0 pl-0 bg-white"
+                            disabled="" />
                     </div>
 
                     <div class="border p-4 rounded mb-4">
@@ -139,7 +142,8 @@
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0" data-aos="fade" data-aos-delay="">
                                 <a class="block-2-item" href="#">
                                     <figure class="image">
-                                        <img src="{{ asset('client/images/women.jpg') }}" alt="" class="img-fluid">
+                                        <img src="{{ asset('client/images/women.jpg') }}" alt=""
+                                            class="img-fluid">
                                     </figure>
                                     <div class="text">
                                         <span class="text-uppercase">Collections</span>
@@ -150,7 +154,8 @@
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="100">
                                 <a class="block-2-item" href="#">
                                     <figure class="image">
-                                        <img src="{{ asset('client/images/children.jpg') }}" alt="" class="img-fluid">
+                                        <img src="{{ asset('client/images/children.jpg') }}" alt=""
+                                            class="img-fluid">
                                     </figure>
                                     <div class="text">
                                         <span class="text-uppercase">Collections</span>
@@ -161,7 +166,8 @@
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="200">
                                 <a class="block-2-item" href="#">
                                     <figure class="image">
-                                        <img src="{{ asset('client/images/men.jpg') }}" alt="" class="img-fluid">
+                                        <img src="{{ asset('client/images/men.jpg') }}" alt=""
+                                            class="img-fluid">
                                     </figure>
                                     <div class="text">
                                         <span class="text-uppercase">Collections</span>
