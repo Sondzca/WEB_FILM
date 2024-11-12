@@ -15,21 +15,14 @@
                 </figure>
             </div>
             <div class="col-lg-8">
-                <!-- Hình ảnh của ticket -->
-
-
-                <!-- Tên ticket -->
                 <h2 class="ticket-title">{{ $ticket->name }}</h2>
-
-                <!-- Mô tả ticket -->
                 <p class="ticket-description">{{ $ticket->description }}</p>
 
                 <!-- Giá ticket -->
-                <p class="ticket-price">${{ $ticket->price }}</p>
+                <p class="ticket-price" style="color: red">{{ number_format($ticket->price, 0, ',', '.') }} VNĐ</p>
 
-                <!-- Thêm các thông tin khác nếu có -->
-                <!-- Ví dụ: -->
-                <p>Category: {{ $ticket->category->name }}</p> <!-- Nếu bạn có quan hệ với Category -->
+
+                <p>Category: {{ $ticket->category->name }}</p>
 
                 <!-- Thêm vào giỏ hàng hoặc các hành động khác -->
                 <form action="" method="">

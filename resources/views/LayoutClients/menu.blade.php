@@ -10,7 +10,7 @@
                     @endforeach
                 </ul>
             </li>
-            <li><a href="{{ route('shop') }}">Shop</a></li>
+            <li><a href="{{ route('shop.index') }}">Shop</a></li>
             <li><a href="{{ route('about') }}">About</a></li>
             <li><a href="{{ route('contact') }}">Contact</a></li>
 
