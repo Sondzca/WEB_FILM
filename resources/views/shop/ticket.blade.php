@@ -17,6 +17,8 @@
             <div class="col-lg-8">
                 <h2 class="ticket-title">{{ $ticket->name }}</h2>
                 <p class="ticket-description">{{ $ticket->description }}</p>
+                <p>Thời gian : {{ \Carbon\Carbon::parse($ticket->startday)->format('d/m/Y H:i') }} -
+                    {{ \Carbon\Carbon::parse($ticket->enday)->format('d/m/Y H:i') }}</p>
 
                 <!-- Giá ticket -->
                 <p class="ticket-price" style="color: red">{{ number_format($ticket->price, 0, ',', '.') }} VNĐ</p>
