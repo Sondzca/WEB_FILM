@@ -20,6 +20,7 @@
                 <th>Start Day</th>
                 <th>End Day</th>
                 <th>Quantity</th>
+                <th>Sell</th>
                 <th>Price</th>
                 <th>Description</th>
                 <th>Organizer</th>
@@ -39,6 +40,7 @@
                 <td>{{ \Carbon\Carbon::parse($ticket->enday)->format('d/m/Y') }}</td>
                 
                 <td>{{ $ticket->quantity }}</td>
+                <td>{{ $ticket->sell_quantity }}</td>
                 <td>
                     {{ number_format($ticket->price) }} USD
                     @if ($solPrice)
