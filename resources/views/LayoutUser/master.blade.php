@@ -40,7 +40,7 @@
                         <li><a href="#">Cài Đặt Thông Báo</a></li>
                     </ul>
                 </li>
-                <li><a href="" class="btn btn-light w-100 text-start">Kết nối ví</a></li>
+                <li><a href="{{route('wallet.index')}}" class="btn btn-light w-100 text-start">Kết nối ví</a></li>
                 <li><a href="" class="btn btn-light w-100 text-start">Đơn Mua</a></li>
                 <li><a href="#" class="btn btn-light w-100 text-start">Điểm danh</a></li>
                 <li><a href="#" class="btn btn-light w-100 text-start">Thông Báo</a></li>

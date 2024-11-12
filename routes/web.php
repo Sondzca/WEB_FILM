@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -75,4 +76,7 @@ Route::controller(UserController::class)->middleware(['auth', 'user'])->group(fu
 
     Route::get('user/edit', 'edit')->name('user.edit');
     Route::post('user/update', 'update')->name('user.update');
+
+    //route chức năng
+    Route::resource('user/wallet', WalletController::class);
 });
