@@ -53,6 +53,14 @@ Route::controller(ClientController::class)->group(function () {
 // Route cho Admin
 Route::controller(AdminController::class)->middleware(['auth', 'AdminOrManager'])->group(function () {
     Route::get('admin/dashboard',  'index')->name('admin.dashboard');
+    // Đổi mật khẩu
+    Route::get('/admin/change-password', 'changepass')->name('admin.changepass.form');
+    Route::post('/admin/change-password', 'changepass_')->name('admin.password.change');
+    // Cập nhật tài khoản
+    Route::get('/admin/edit', 'edit')->name('admin.edit');
+    Route::post('/admin/update', 'update')->name('admin.update');
+
+    //route chức năng
     Route::resource('admin/categories', CategoryController::class);
     Route::resource('admin/tickets', TicketController::class);
 });

@@ -11,10 +11,15 @@ use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
-   
+
     public function getSolanaPrice()
     {
-        return Cache::remember('solana_price', 300, function () {
+        //cập nhật giá solana môi giờ
+        $now = now();
+        $nextHour = $now->copy()->addHour()->startOfHour();
+        $secondsUntilNextHour = $now->diffInSeconds($nextHour);
+
+        return Cache::remember('solana_price', $secondsUntilNextHour, function () {
             $response = Http::get('https://api.coingecko.com/api/v3/simple/price', [
                 'ids' => 'solana',
                 'vs_currencies' => 'usd'
