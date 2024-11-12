@@ -10,13 +10,13 @@
     <a href="{{ route('tickets.create') }}" class="btn btn-success mb-3">Thêm mới</a>
     
 
-    <table class="table table-bordered">
+    <table class="table table-bordered text-center">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Category</th>
                 <th>Name</th>
-                <th>Image</th>
+                <th>Avatar</th>
                 <th>Start Day</th>
                 <th>End Day</th>
                 <th>Quantity</th>
@@ -40,9 +40,9 @@
                 
                 <td>{{ $ticket->quantity }}</td>
                 <td>
-                    {{ number_format($ticket->price, 2) }} USD
+                    {{ number_format($ticket->price) }} USD
                     @if ($solPrice)
-                        <br>
+                     
                         ≈ {{ number_format($ticket->price / $solPrice, 4) }} SOL
                     @endif
                 </td>

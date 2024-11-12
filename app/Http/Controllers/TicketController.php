@@ -29,13 +29,17 @@ class TicketController extends Controller
         $solPrice = $this->getSolanaPrice();
         $tickets = Ticket::with('category')->paginate(5);
 
-        return view('categories.index', compact('tickets', 'solPrice'));
+        return view('tickets.index', compact('tickets', 'solPrice'));
     }
 
     public function create()
     {
+        $solPrice = $this->getSolanaPrice();
+        if ($solPrice > 1) {
+            $solPrice = 1 / $solPrice;
+        }
         $categories = Category::all();
-        return view('tickets.create', compact('categories'));
+        return view('tickets.create', compact('categories', 'solPrice'));
     }
 
 
