@@ -12,9 +12,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount('ticket')->paginate(5);
+        $data = Category::withCount('tickets')->paginate(5);
 
-        return view('categories.index', compact('categories'));
+        return view('categories.index', compact('data'));
     }
 
     /**

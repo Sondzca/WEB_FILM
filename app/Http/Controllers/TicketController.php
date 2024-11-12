@@ -2,19 +2,36 @@
 
 namespace App\Http\Controllers;
 
-
+use Illuminate\Support\Facades\Http;
 use App\Models\Category;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
+   
+    public function getSolanaPrice()
+    {
+        return Cache::remember('solana_price', 300, function () {
+            $response = Http::get('https://api.coingecko.com/api/v3/simple/price', [
+                'ids' => 'solana',
+                'vs_currencies' => 'usd'
+            ]);
+
+            return $response->successful() ? $response->json()['solana']['usd'] : null;
+        });
+    }
+
     public function index()
     {
-        $tickets = Ticket::with('category')->paginate(10);
-        return view('tickets.index', compact('tickets'));
+        $solPrice = $this->getSolanaPrice();
+        $tickets = Ticket::with('category')->paginate(5);
+
+        return view('categories.index', compact('tickets', 'solPrice'));
     }
+
     public function create()
     {
         $categories = Category::all();

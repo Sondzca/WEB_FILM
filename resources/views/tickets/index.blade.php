@@ -39,7 +39,13 @@
                 <td>{{ \Carbon\Carbon::parse($ticket->enday)->format('d/m/Y') }}</td>
                 
                 <td>{{ $ticket->quantity }}</td>
-                <td>{{ number_format($ticket->price, 2) }} VND</td>
+                <td>
+                    {{ number_format($ticket->price, 2) }} USD
+                    @if ($solPrice)
+                        <br>
+                        ≈ {{ number_format($ticket->price / $solPrice, 4) }} SOL
+                    @endif
+                </td>
                 <td>{{ $ticket->description }}</td>
                 <td>{{ $ticket->nguoitochuc }}</td>
                 <td>{{ $ticket->address }}</td>

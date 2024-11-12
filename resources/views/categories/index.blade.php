@@ -24,7 +24,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($categories as $category)
+            @foreach ($data as $category)
                 <tr>
                     <td>{{ $category->id }}</td>
                     <td>{{ $category->name }}</td>
@@ -46,6 +46,6 @@
     </table>
 
     <div class="d-flex justify-content-center">
-        {{ $categories->links() }} <!-- Hiển thị phân trang nếu có -->
+        {{ $data->links() }} <!-- Hiển thị phân trang nếu có -->
     </div>
 @endsection

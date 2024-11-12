@@ -27,7 +27,7 @@
         </div>
 
         <div class="form-group mt-3">
-            <label>Image</label>
+            <label>Avatar</label>
             <input type="file" name="image" class="form-control" id="image" maxlength="255" required>
             <img id="preview-image" src="#" alt="Image Preview" style="display: none; margin-top: 10px; width: 150px; height: 100px;" />
         </div>
@@ -49,7 +49,7 @@
 
         <div class="form-group mt-3">
             <label>Price</label>
-            <input type="number" name="price" class="form-control" step="0.01" value="{{ old('price') }}" required>
+            <input type="number" name="price" class="form-control" step="0.01" value="{{ old('price') }}" placeholder="USD" required>
         </div>
 
         <div class="form-group mt-3">
