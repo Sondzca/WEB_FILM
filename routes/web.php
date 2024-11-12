@@ -41,12 +41,13 @@ Route::controller(AccountController::class)->group(function () {
 //Các route cho client
 Route::controller(ClientController::class)->group(function () {
     Route::get('/', 'index')->name('index');
-    Route::get('clients/shop', 'shop')->name('shop');
+    Route::get('clients/shop', 'shop')->name('shop.index');
     Route::get('clients/carts', 'carts')->name('carts');
     Route::get('clients/contact', 'contact')->name('contact');
     Route::get('clients/about', 'about')->name('about');
     Route::get('clients/detail', 'detail')->name('detail');
     Route::get('clients/checkout', 'checkout')->name('checkout');
+    Route::get('ticket/{id}', [TicketController::class, 'show'])->name('ticket.show');
 });
 
 // Route cho Admin

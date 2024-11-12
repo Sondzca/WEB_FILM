@@ -63,7 +63,7 @@ class TicketController extends Controller
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|max:255',
-            'image' => 'nullable|image', 
+            'image' => 'nullable|image',
             'startday' => 'required|date',
             'enday' => 'required|date|after:startday',
             'address' => 'required|max:255',
@@ -72,27 +72,36 @@ class TicketController extends Controller
             'description' => 'nullable|max:1024',
             'nguoitochuc' => 'nullable|max:255',
         ]);
-    
-        $data['is_active'] = $request->filled('is_active') ? 1 : 0; 
-        
+
+        $data['is_active'] = $request->filled('is_active') ? 1 : 0;
+
         if ($request->hasFile('image')) {
             if ($ticket->image) {
                 Storage::delete($ticket->image);
             }
-    
+
             $data['image'] = $request->file('image')->store('ticket', 'public');
         }
-    
+
         $ticket->update($data);
-    
+
         return redirect()->route('tickets.index')->with('success', 'Ticket updated successfully.');
     }
-    
+
 
     // Delete a ticket
     public function destroy(Ticket $ticket)
     {
         $ticket->delete();
         return redirect()->route('tickets.index')->with('success', 'Ticket deleted successfully.');
+    }
+
+    public function show($id)
+    {
+        // Lấy ticket từ cơ sở dữ liệu theo ID
+        $ticket = Ticket::findOrFail($id);
+
+        // Trả về view và truyền ticket
+        return view('shop.ticket', compact('ticket'));
     }
 }
