@@ -50,7 +50,7 @@ Route::controller(ClientController::class)->group(function () {
 });
 
 // Route cho Admin
-Route::controller(AdminController::class)->group(function () {
+Route::controller(AdminController::class)->middleware(['auth', 'AdminOrManager'])->group(function () {
     Route::get('admin/dashboard',  'index')->name('admin.dashboard');
     Route::resource('admin/categories', CategoryController::class);
     Route::resource('admin/tickets', TicketController::class);
@@ -58,7 +58,7 @@ Route::controller(AdminController::class)->group(function () {
 
 
 // Route cho User
-Route::controller(UserController::class)->group(function () {
+Route::controller(UserController::class)->middleware(['auth', 'user'])->group(function () {
     Route::get('user/dashboard', 'user')->name('user.dashboard');
 
     Route::get('user/change-password', 'changepass')->name('user.changepass.form');
