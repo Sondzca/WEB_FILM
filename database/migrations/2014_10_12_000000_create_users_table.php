@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('wallet', 100)->nullable()->unique();
             $table->string('fullname')->nullable();
+            $table->date('birth_day')->nullable();
+            $table->string('avatar')->nullable();
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone', 15)->nullable();

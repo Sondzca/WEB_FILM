@@ -23,19 +23,19 @@ use Illuminate\Support\Facades\Route;
 
 // Route cho Account
 Route::controller(AccountController::class)->group(function () {
-    Route::get('register', 'register')->name('register.form');
-    Route::post('register', 'register_')->name('register');
+    Route::get('account/register', 'register')->name('register.form');
+    Route::post('account/register', 'register_')->name('register');
 
-    Route::get('login', 'login')->name('login.form');
-    Route::post('login', 'login_')->name('login');
+    Route::get('account/login', 'login')->name('login.form');
+    Route::post('account/login', 'login_')->name('login');
 
-    Route::get('password/forgot', 'rspassword')->name('password.forgot.form');
+    Route::get('account/password/forgot', 'rspassword')->name('forgot.form');
     Route::post('password/forgot', 'rspassword_')->name('password.forgot');
 
-    Route::get('password/reset/{token}', 'updatepassword')->name('password.reset');
-    Route::post('password/reset', 'updatepassword_')->name('password.update');
+    Route::get('account/password/reset/{token}', 'updatepassword')->name('password.reset');
+    Route::post('account/password/reset', 'updatepassword_')->name('password.update');
 
-    Route::post('logout', 'logout')->name('logout');
+    Route::post('account/logout', 'logout')->name('logout');
 });
 
 //Các route cho client

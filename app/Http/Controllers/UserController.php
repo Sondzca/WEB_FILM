@@ -13,22 +13,14 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
 
-    public function user(Request $request)
+    public function user()
     {
-        $token = $request->cookie('token');
-    
-        // Nếu token có định dạng "ID|token", chỉ lấy phần token
-        if ($token && strpos($token, '|') !== false) {
-            $tokenParts = explode('|', $token);
-            $token = end($tokenParts); // Lấy phần sau dấu '|'
-        }
-    
-        return view('user.dashboard', ['token' => $token]);
+        return view('LayoutUser.dashboard');
     }
 
     public function changepass()
     {
-        return view('user.changepass');
+        return view('LayoutUser.changepass');
     }
     public function changepass_(Request $request)
     {
@@ -59,9 +51,8 @@ class UserController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        $addresses = $user->shipAddresses;
 
-        return view('user.update', compact('user', 'addresses'));
+        return view('LayoutUser.update', compact('user'));
     }
 
     public function update(Request $request)
@@ -92,24 +83,7 @@ class UserController extends Controller
             $user['avatar'] = Storage::put('UserAvatar', $request->file('avatar'));
         }
 
-        $addressId = $request->input('address_id'); // Nhận ID địa chỉ từ request
-        if ($addressId) {
-            DB::transaction(function () use ($user, $addressId) {
-                // Đặt tất cả các địa chỉ khác về 0
-                   /**
-                 * @var User $user
-                 */
-                $user->shipAddresses()->update(['is_default' => 0]);
 
-                // Cập nhật địa chỉ được chọn thành mặc định
-                $address = $user->shipAddresses()->find($addressId);
-                if ($address) {
-                    $address->is_default = 1; // Đặt is_default thành 1
-                    $address->save(); // Lưu lại thay đổi
-                }
-            });
-        }
-        
            /**
              * @var User $user
              */

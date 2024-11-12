@@ -7,12 +7,10 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -20,7 +18,7 @@ class AccountController extends Controller
 {
     public function register()
     {
-        return view('account.login', ['activeTab' => 'signup']);
+        return view('account.sigup');
     }
 
     public function register_(Request $request)
@@ -39,31 +37,7 @@ class AccountController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
     
-            try {
-                $token = $user->createToken('login')->plainTextToken;
-    
-                // Tách chuỗi token để lấy phần token thực tế
-                $tokenParts = explode('|', $token);
-                $actualToken = isset($tokenParts[1]) ? $tokenParts[1] : $token; // Lấy phần thứ hai nếu có
-    
-                // Lưu vào cookie mà JavaScript có thể truy cập
-                $cookie = cookie('token', $actualToken, 0, null, null, false, false); // không HttpOnly
-                $userId = $user->id; 
-                $userCookie = cookie('user_id', $userId, 0, null, null, false, false); // không HttpOnly
-    
-                // Lưu ID và token vào storage
-                Storage::disk('local')->put('user_' . $userId . '.txt', json_encode([
-                    'user_id' => $userId,
-                    'token' => $actualToken,
-                ]));
-            } catch (\Exception $e) {
-                return back()->withErrors(['token' => $e->getMessage()]);
-            }
-    
-            return redirect("http://localhost:3000/?user_id={$userId}")
-                ->with('success', 'Đăng kí tài khoản thành công')
-                ->withCookie($cookie)
-                ->withCookie($userCookie); 
+            return redirect('/')->with('success', 'Đăng kí tài khoản thành công');
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -72,77 +46,38 @@ class AccountController extends Controller
 
     public function login()
     {
-        return view('account.login', ['activeTab' => 'signup']);
+        return view('account.sigin');
     }
 
     public function login_(Request $request)
     {
         $credentials = $request->validate([
-            'account' => 'required',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
     
-        $loginType = filter_var($credentials['account'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-    
-        $loginCredentials = [
-            $loginType => $credentials['account'],
-            'password' => $credentials['password'],
-        ];
-    
-        if (Auth::attempt($loginCredentials, true)) {
+        if (Auth::attempt($credentials, true)) {
             $request->session()->regenerate();
     
             /** @var User $user */
             $user = Auth::user();
     
-            // Check if the user is active
+            // Kiểm tra nếu tài khoản của người dùng đang bị khóa
             if ($user->is_active == 0) {
                 Auth::logout();
                 return back()->withErrors([
-                    'account' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
-                ])->onlyInput('account');
+                    'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+                ])->onlyInput('email');
             }
     
-            Log::info('User ID: ' . $user->id);
-            Log::info('User Type: ' . get_class($user));
-    
-            try {
-                $token = $user->createToken('login')->plainTextToken;
-    
-                // Tách chuỗi token để lấy phần token thực tế
-                $tokenParts = explode('|', $token);
-                $actualToken = isset($tokenParts[1]) ? $tokenParts[1] : $token; // Lấy phần thứ hai nếu có
-    
-                // Lưu vào cookie mà JavaScript có thể truy cập
-                $cookie = cookie('token', $actualToken, 0, null, null, false, false); // không HttpOnly
-                $userId = $user->id; 
-                $userCookie = cookie('user_id', $userId, 0, null, null, false, false); // không HttpOnly
-    
-                // Lưu ID và token vào storage
-                Storage::disk('local')->put('user_' . $userId . '.txt', json_encode([
-                    'user_id' => $userId,
-                    'token' => $actualToken,
-                ]));
-    
-            } catch (\Exception $e) {
-                return back()->withErrors(['token' => $e->getMessage()]);
-            }
-    
-            // Chuyển hướng với ID người dùng qua URL
-            return redirect("http://localhost:3000/?user_id={$userId}")
-                ->with('success', 'Đăng nhập thành công')
-                ->withCookie($cookie)
-                ->withCookie($userCookie); 
+            // Chuyển hướng với thông báo thành công
+            return redirect('/')->with('success', 'Đăng nhập thành công');
         }
     
         return back()->withErrors([
-            'account' => 'Tài khoản không tồn tại hoặc sai tài khoản, mật khẩu',
-        ])->onlyInput('account');
+            'email' => 'Email hoặc mật khẩu không chính xác.',
+        ])->onlyInput('email');
     }
-    
-    
-    
-    
     
     
     public function logout(Request $request)
@@ -150,40 +85,11 @@ class AccountController extends Controller
         /** @var User $user */
         $user = Auth::user();
     
-        if ($user) {
-            // Xóa tất cả các token của người dùng
-            $user->tokens()->delete();
-    
-            // Lấy ID người dùng từ Auth
-            $userId = Auth::id(); // Sử dụng Auth::id() để lấy ID người dùng
-            
-            if ($userId) {
-                // Tạo đường dẫn file chính xác
-                $filePath = 'user_' . $userId . '.txt';
-    
-                // Kiểm tra sự tồn tại của file và xóa nếu có
-                if (Storage::exists($filePath)) {
-                    Storage::delete($filePath);
-                } else {
-                    Log::info("File không tồn tại: " . $filePath);
-                }
-            }
-        }
-    
         // Đăng xuất người dùng
         Auth::logout();
         $request->session()->invalidate();
-        $request->session()->regenerateToken();
     
-        // Xóa cookie chứa token và user_id
-        $cookieToken = Cookie::forget('token');
-        $cookieUserId = Cookie::forget('user_id');
-    
-        // Chuyển hướng và xóa cả hai cookie
-        return redirect('http://localhost:3000/')
-            ->with('success', 'Đã đăng xuất thành công')
-            ->withCookie($cookieToken)
-            ->withCookie($cookieUserId);
+        return redirect('/')->with('success', 'Đăng xuất tài khoản thành công');
     }
     
     
@@ -191,7 +97,7 @@ class AccountController extends Controller
 
     public function rspassword()
     {
-        return view('account.login', ['activeTab' => 'forgot']);
+        return view('account.forgot');
     }
 
     public function rspassword_(Request $request)

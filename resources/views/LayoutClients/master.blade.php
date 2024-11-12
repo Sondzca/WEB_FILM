@@ -70,17 +70,40 @@
 
                         <div class="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
                             <div class="site-logo">
-                                <a href="{{route('index')}}" class="js-logo-clone">Tickets</a>
+                                <a href="{{ route('index') }}" class="js-logo-clone">Tickets</a>
                             </div>
                         </div>
 
                         <div class="col-6 col-md-4 order-3 order-md-3 text-right">
                             <div class="site-top-icons">
                                 <ul>
-                                    <li><a href="#"><span class="icon icon-person"></span></a></li>
+                                    <li>
+                                        @auth
+                                            @php
+                                                $role = Auth::user()->role;
+                                                $redirectRoute = '';
+
+                                                if ($role === 0) {
+                                                    $redirectRoute = 'user.dashboard';
+                                                } elseif ($role === 1 || $role === 2) {
+                                                    $redirectRoute = 'admin.dashboard';
+                                                }
+                                            @endphp
+                                            <span style="color: green">Xin chào:  {{ Auth::user()->fullname ?? Auth::user()->email }}</span>
+
+                                            <a href="{{ route($redirectRoute) }}">
+                                                <span class="icon icon-person ms-2"></span>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('login') }}">
+                                                <span class="icon icon-person"></span>
+                                            </a>
+                                        @endauth
+
+                                    </li>
                                     <li><a href="#"><span class="icon icon-heart-o"></span></a></li>
                                     <li>
-                                        <a href="{{route('carts')}}" class="site-cart">
+                                        <a href="{{ route('carts') }}" class="site-cart">
                                             <span class="icon icon-shopping_cart"></span>
                                             <span class="count">2</span>
                                         </a>
