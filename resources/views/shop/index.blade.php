@@ -84,14 +84,17 @@
                         @foreach ($ticketss as $item)
                             <div class="item">
                                 <div class="block-4 text-center">
-                                    <figure class="block-4-image">
-                                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
-                                            class="img-fluid">
-                                    </figure>
-                                    <div class="block-4-text p-4">
-                                        <h3><a href="#">{{ $item->name }}</a></h3>
-                                        <p class="text-primary font-weight-bold">{{ $item->price }}</p>
-                                    </div>
+                                    <a class="block-2-item" href="{{ route('ticket.show', $item->id) }}">
+
+                                        <figure class="block-4-image">
+                                            <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
+                                                class="img-fluid">
+                                        </figure>
+                                        <div class="block-4-text p-4">
+                                            <h3><a href="#">{{ $item->name }}</a></h3>
+                                            <p class="text-primary font-weight-bold">{{ $item->price }}</p>
+                                        </div>
+                                    </a>
                                 </div>
                             </div>
                         @endforeach
