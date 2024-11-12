@@ -49,6 +49,7 @@ Route::controller(ClientController::class)->group(function () {
     Route::get('clients/detail', 'detail')->name('detail');
     Route::get('clients/checkout', 'checkout')->name('checkout');
     Route::get('ticket/{id}', [TicketController::class, 'show'])->name('ticket.show');
+    Route::get('/search-tickets', [TicketController::class, 'searchTickets'])->name('search.tickets');
 });
 
 // Route cho Admin

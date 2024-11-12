@@ -1,7 +1,7 @@
 @extends('LayoutClients.master')
 
 @section('title')
-    index
+    Tickets
 @endsection
 <style>
     .fit-image {
@@ -21,22 +21,26 @@
 </style>
 
 @section('content_client')
-    <div class="site-blocks-cover" style="background-image: url({{ asset('client/images/hero_1.jpg') }});" data-aos="fade">
-        <div class="container">
+    <div class="site-blocks-cover"
+        style="background-image: url('{{ asset('assets/images/banner.jpg') }}'); background-size: cover; background-position: center;"
+        data-aos="fade">
+        <div class="overlay"
+            style="background-color: rgba(0, 0, 0, 0.4); position: absolute; top: 0; right: 0; bottom: 0; left: 0;"></div>
+        <div class="container position-relative" style="z-index: 1;">
             <div class="row align-items-start align-items-md-center justify-content-end">
                 <div class="col-md-5 text-center text-md-left pt-5 pt-md-0">
-                    <h1 class="mb-2">Finding Your Perfect Shoes</h1>
+                    <h1 class="mb-2 text-white">Finding Your Perfect Movies</h1>
                     <div class="intro-text text-center text-md-left">
-                        <p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus at iaculis
-                            quam. Integer accumsan tincidunt fringilla. </p>
+                        <p class="mb-4 text-white">Watch good movies every day with Tickets</p>
                         <p>
-                            <a href="#" class="btn btn-sm btn-primary">Shop Now</a>
+                            <a href="#" class="btn btn-sm btn-primary">Buy Now</a>
                         </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <div class="site-section site-blocks-2">
         <div class="container">
@@ -81,7 +85,7 @@
                             <div class="item">
                                 <div class="block-4 text-center">
                                     <figure class="block-4-image">
-                                        <img src="{{ asset('storage/' . $ticket->image) }}" alt="{{ $ticket->title }}"
+                                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
                                             class="img-fluid">
                                     </figure>
                                     <div class="block-4-text p-4">
