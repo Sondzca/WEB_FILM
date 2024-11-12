@@ -21,6 +21,23 @@
     <link rel="stylesheet" href={{ asset('client/css/style.css') }}>
 
 </head>
+<style>
+    #search-results a.dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    #search-results img.img-thumbnail {
+        margin-right: 10px;
+    }
+
+    #search-results .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+</style>
 
 <body>
     <div class="container">
@@ -62,11 +79,15 @@
                     <div class="row align-items-center">
 
                         <div class="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
-                            <form action="" class="site-block-top-search">
+                            <form action="" class="site-block-top-search" autocomplete="off">
                                 <span class="icon icon-search2"></span>
-                                <input type="text" class="form-control border-0" placeholder="Search">
+                                <input type="text" id="search-input" class="form-control border-0"
+                                    placeholder="Search for tickets">
+                                <div id="search-results" class="dropdown-menu"
+                                    style="display: none; position: absolute; width: 100%;"></div>
                             </form>
                         </div>
+
 
                         <div class="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
                             <div class="site-logo">
@@ -89,7 +110,8 @@
                                                     $redirectRoute = 'admin.dashboard';
                                                 }
                                             @endphp
-                                            <span style="color: green">Xin chào:  {{ Auth::user()->fullname ?? Auth::user()->email }}</span>
+                                            <span style="color: green">Xin chào:
+                                                {{ Auth::user()->fullname ?? Auth::user()->email }}</span>
 
                                             <a href="{{ route($redirectRoute) }}">
                                                 <span class="icon icon-person ms-2"></span>
@@ -136,6 +158,54 @@
     <script src={{ asset('client/js/aos.js') }}></script>
 
     <script src={{ asset('client/js/main.js') }}></script>
+    <script>
+        $(document).ready(function() {
+            $('#search-input').on('input', function() {
+                const query = $(this).val();
+
+                if (query.length > 1) {
+                    $.ajax({
+                        url: "{{ route('search.tickets') }}",
+                        type: "GET",
+                        data: {
+                            query: query
+                        },
+                        success: function(data) {
+                            let dropdown = $('#search-results');
+                            dropdown.empty();
+
+                            if (data.length) {
+                                dropdown.show();
+                                data.forEach(ticket => {
+                                    // Construct the dropdown item with image, name, and price
+                                    dropdown.append(
+                                        `<a href="/ticket/${ticket.id}" class="dropdown-item d-flex align-items-center">
+                                        <img src="/storage/${ticket.image}" alt="${ticket.name}" class="img-thumbnail mr-2" style="width: 50px; height: 50px;">
+                                    <div>
+                                        <div><strong>${ticket.name}</strong></div>
+                                        <div class="text-muted">$${ticket.price}</div>
+                                    </div>
+                                </a>`
+                                    );
+                                });
+                            } else {
+                                dropdown.hide();
+                            }
+                        }
+                    });
+                } else {
+                    $('#search-results').hide();
+                }
+            });
+
+            // Hide dropdown when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#search-input').length) {
+                    $('#search-results').hide();
+                }
+            });
+        });
+    </script>
 
 </body>
 

@@ -81,7 +81,7 @@
                             <div class="item">
                                 <div class="block-4 text-center">
                                     <figure class="block-4-image">
-                                        <img src="{{ asset('storage/' . $ticket->image) }}" alt="{{ $ticket->title }}"
+                                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
                                             class="img-fluid">
                                     </figure>
                                     <div class="block-4-text p-4">

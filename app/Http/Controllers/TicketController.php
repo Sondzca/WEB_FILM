@@ -130,4 +130,13 @@ class TicketController extends Controller
         // Trả về view và truyền ticket
         return view('shop.ticket', compact('ticket'));
     }
+    public function searchTickets(Request $request)
+    {
+        $query = $request->get('query');
+        $tickets = Ticket::where('name', 'LIKE', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'name', 'price', 'image']); // Include 'price' and 'image' fields
+
+        return response()->json($tickets);
+    }
 }
