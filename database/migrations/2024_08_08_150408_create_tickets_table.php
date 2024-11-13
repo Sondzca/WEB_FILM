@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('image', 255); 
             $table->dateTime('startday'); 
             $table->dateTime('enday'); 
-            $table->integer('quantity')->default(0); 
+            $table->integer('quantity'); 
+            $table->unsignedInteger('sell_quantity')->default(0);
             $table->decimal('price', 8, 2); 
             $table->string('description', 250)->nullable(); 
             $table->string('nguoitochuc')->nullable(); 

@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -50,11 +51,20 @@ Route::controller(ClientController::class)->group(function () {
     Route::get('clients/detail', 'detail')->name('detail');
     Route::get('clients/checkout', 'checkout')->name('checkout');
     Route::get('ticket/{id}', [TicketController::class, 'show'])->name('ticket.show');
+    Route::get('/search-tickets', [TicketController::class, 'searchTickets'])->name('search.tickets');
 });
 
 // Route cho Admin
 Route::controller(AdminController::class)->middleware(['auth', 'AdminOrManager'])->group(function () {
     Route::get('admin/dashboard',  'index')->name('admin.dashboard');
+    // Đổi mật khẩu
+    Route::get('/admin/change-password', 'changepass')->name('admin.changepass.form');
+    Route::post('/admin/change-password', 'changepass_')->name('admin.password.change');
+    // Cập nhật tài khoản
+    Route::get('/admin/edit', 'edit')->name('admin.edit');
+    Route::post('/admin/update', 'update')->name('admin.update');
+
+    //route chức năng
     Route::resource('admin/categories', CategoryController::class);
     Route::resource('admin/tickets', TicketController::class);
 });
@@ -69,9 +79,16 @@ Route::controller(UserController::class)->middleware(['auth', 'user'])->group(fu
 
     Route::get('user/edit', 'edit')->name('user.edit');
     Route::post('user/update', 'update')->name('user.update');
+
 });
 
 
 // Định tuyến cho việc thêm sản phẩm vào giỏ hàng
 Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
 Route::resource('user/carts', CartController::class);
+
+
+    //route chức năng
+    Route::resource('user/wallet', WalletController::class);
+});
+

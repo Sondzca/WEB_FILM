@@ -6,7 +6,9 @@
                 <a href="{{ route('index') }}">Category</a>
                 <ul class="dropdown">
                     @foreach ($categories as $category)
-                        <li><a href="#">{{ $category->name }}</a></li>
+                        <a class="dropdown-item" href="{{ route('shop.index', ['category' => $category->id]) }}">
+                            {{ $category->name }}
+                        </a>
                     @endforeach
                 </ul>
             </li>

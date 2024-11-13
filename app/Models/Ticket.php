@@ -17,6 +17,7 @@ class Ticket extends Model
         'price',
         'description',
         'quantity',
+        'sell_quantity',
         'is_active',
         'nguoitochuc',
         'address',

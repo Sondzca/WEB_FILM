@@ -137,39 +137,4 @@
 
         </div>
     </div>
-    <div class="pagination">
-        {{ $tickets->links() }}
-    </div>
-    <script>
-        $(document).ready(function() {
-            // Tỷ giá từ USD sang VND (giả sử là 1 USD = 23,500 VND)
-            const exchangeRate = 23500;
-
-            // Khởi tạo slider
-            $("#slider-range").slider({
-                range: true,
-                min: 0,
-                max: 1000, // Giá trị max của slider, bạn có thể điều chỉnh giá trị này
-                values: [0, 1000], // Giá trị mặc định của slider
-                slide: function(event, ui) {
-                    // Chuyển đổi giá trị từ USD sang VND
-                    const priceMinVND = ui.values[0] * exchangeRate;
-                    const priceMaxVND = ui.values[1] * exchangeRate;
-
-                    // Cập nhật giá trị hiển thị khi người dùng thay đổi slider (VNĐ)
-                    $("#amount").val(priceMinVND.toLocaleString() + " VNĐ - " + priceMaxVND
-                        .toLocaleString() + " VNĐ");
-
-                    // Cập nhật giá trị trong các input ẩn (VNĐ)
-                    $("#price_min").val(priceMinVND);
-                    $("#price_max").val(priceMaxVND);
-                }
-            });
-
-            // Đặt giá trị hiển thị ban đầu
-            const initialMinVND = $("#slider-range").slider("values", 0) * exchangeRate;
-            const initialMaxVND = $("#slider-range").slider("values", 1) * exchangeRate;
-            $("#amount").val(initialMinVND.toLocaleString() + " VNĐ - " + initialMaxVND.toLocaleString() + " VNĐ");
-        });
-    </script>
 @endsection

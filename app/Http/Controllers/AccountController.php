@@ -82,10 +82,6 @@ class AccountController extends Controller
     
     public function logout(Request $request)
     {
-        /** @var User $user */
-        $user = Auth::user();
-    
-        // Đăng xuất người dùng
         Auth::logout();
         $request->session()->invalidate();
     

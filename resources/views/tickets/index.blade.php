@@ -10,16 +10,17 @@
     <a href="{{ route('tickets.create') }}" class="btn btn-success mb-3">Thêm mới</a>
     
 
-    <table class="table table-bordered">
+    <table class="table table-bordered text-center">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Category</th>
                 <th>Name</th>
-                <th>Image</th>
+                <th>Avatar</th>
                 <th>Start Day</th>
                 <th>End Day</th>
                 <th>Quantity</th>
+                <th>Sell</th>
                 <th>Price</th>
                 <th>Description</th>
                 <th>Organizer</th>
@@ -39,7 +40,14 @@
                 <td>{{ \Carbon\Carbon::parse($ticket->enday)->format('d/m/Y') }}</td>
                 
                 <td>{{ $ticket->quantity }}</td>
-                <td>{{ number_format($ticket->price, 2) }} VND</td>
+                <td>{{ $ticket->sell_quantity }}</td>
+                <td>
+                    {{ number_format($ticket->price) }} USD
+                    @if ($solPrice)
+                     
+                        ≈ {{ number_format($ticket->price / $solPrice, 4) }} SOL
+                    @endif
+                </td>
                 <td>{{ $ticket->description }}</td>
                 <td>{{ $ticket->nguoitochuc }}</td>
                 <td>{{ $ticket->address }}</td>

@@ -30,9 +30,9 @@ class UserController extends Controller
             'new_password' => 'required|min:6|confirmed', // Yêu cầu phải xác nhận mật khẩu mới
         ]);
 
-           /**
-             * @var User $user
-             */
+        /**
+         * @var User $user
+         */
         $user = Auth::user();
 
         // Kiểm tra mật khẩu hiện tại có khớp không
@@ -57,6 +57,9 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
+        /**
+         * @var User $user
+         */
         $user = Auth::user();
 
         $request->validate([
@@ -75,23 +78,15 @@ class UserController extends Controller
         $user->address = $request->input('address');
 
         if ($request->hasFile('avatar')) {
-            // Xóa ảnh cũ nếu tồn tại
             if ($user->avatar && Storage::exists($user->avatar)) {
                 Storage::delete($user->avatar);
             }
-            // Lưu ảnh mới và cập nhật đường dẫn vào cột avatar
-            $user['avatar'] = Storage::put('UserAvatar', $request->file('avatar'));
+            $avatarPath = $request->file('avatar')->store('UserAvatar', 'public');
+            $user->avatar = $avatarPath;
         }
 
-
-           /**
-             * @var User $user
-             */
         $user->save();
 
         return redirect()->back()->with('success', 'Thông tin tài khoản đã được cập nhật thành công.');
     }
-
-   
-
 }

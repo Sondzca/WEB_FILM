@@ -16,8 +16,9 @@ class CartItem extends Model
         return $this->belongsTo(Cart::class);  // Một mục giỏ hàng thuộc về một giỏ hàng
     }
 
-    public function ticket()
+    public function tickets()
     {
-        return $this->belongsTo(Ticket::class);  // Một mục giỏ hàng liên kết với một vé
+        return $this->belongsTo(Ticket::class);
+
     }
 }

@@ -4,7 +4,7 @@
             <a href="#" class="nav-link d-flex align-items-center" id="userDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <div class="nav-profile-image">
-                    <img src="#" alt="avatar" class="img-profile rounded-circle"
+                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="avatar" class="img-profile rounded-circle"
                         style="width: 80px; height: 35px;" /> <!-- Thay đổi kích thước ở đây -->
                     <span class="login-status online"></span>
                 </div>
@@ -29,7 +29,7 @@
 
             <!-- Dropdown menu -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item bg-red text-center" href="#">
+                <a class="dropdown-item bg-red text-center" href="{{route('admin.edit')}}">
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     Profile
                 </a>
