@@ -39,27 +39,27 @@
                                 @forelse($cartItems as $item)
                                     <tr data-id="{{ $item->id }}">
                                         <td class="product-thumbnail">
-                                            <img src="{{ asset('storage/' . $item->ticket->image) }}"
-                                                alt="{{ $item->ticket->name }}" class="img-fluid">
+                                            @if($item->ticket)
+                                                <img src="{{ asset('storage/' . $item->ticket->image) }}" alt="{{ $item->ticket->name }}" class="img-fluid">
+                                            @else
+                                                <img src="{{ asset('storage/default-image.jpg') }}" alt="Default Ticket Image" class="img-fluid">
+                                            @endif
                                         </td>
                                         <td class="product-name">
                                             <h2 class="h5 text-black">{{ $item->ticket->name }}</h2>
                                         </td>
-                                        <td class="product-price">{{ number_format($item->ticket->price, 0, ',', '.') }} VNĐ
-                                        </td>
+                                        <td class="product-price">{{ number_format($item->ticket->price, 0, ',', '.') }} VNĐ</td>
                                         <td>
                                             <div class="input-group mb-3" style="max-width: 120px;">
                                                 <div class="input-group-prepend">
-                                                    <button class="btn btn-outline-primary js-btn-minus"
-                                                        type="button">&minus;</button>
+                                                    <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
                                                 </div>
                                                 <input type="number" class="form-control text-center quantity"
                                                     name="quantity[{{ $item->id }}]" value="{{ $item->quantity }}"
                                                     min="1" aria-label="Quantity"
                                                     data-price="{{ $item->ticket->price }}">
                                                 <div class="input-group-append">
-                                                    <button class="btn btn-outline-primary js-btn-plus"
-                                                        type="button">&plus;</button>
+                                                    <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
                                                 </div>
                                             </div>
                                         </td>
@@ -214,13 +214,9 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    // Xóa sản phẩm khỏi DOM
-                                    document.querySelector(`tr[data-id="${itemId}"]`).remove();
-                                    // Cập nhật lại tổng giỏ hàng từ server
-                                    updateCartTotals(data.subtotal);
+                                    this.closest('tr').remove();
+                                    updateCartTotals(data.subtotal); // Cập nhật lại tổng giỏ hàng
                                     alert('Sản phẩm đã được xóa khỏi giỏ hàng!');
-                                    // Reload lại trang
-                                    location.reload(); // Thực hiện load lại trang
                                 } else {
                                     alert('Không thể xóa sản phẩm');
                                 }

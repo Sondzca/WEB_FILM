@@ -12,22 +12,29 @@ use Illuminate\Support\Facades\DB;
 class CartController extends Controller
 {
     public function index()
-    {
-        /**
-         * @var User $user
-         */
-        $user = auth()->user();
-        $cart = $user->cart()->first();
-        if (!$cart) {
-            $cart = Cart::create(['user_id' => $user->id]);
-        }
-        $cartItems = CartItem::where('cart_id', $cart->id)->get();
-        $totalQuantity = $cartItems->sum('quantity');
-        $subtotal = $cartItems->sum(function ($item) {
-            return $item->quantity * $item->ticket->price;
-        });
-        return view('carts.carts', compact('cartItems', 'totalQuantity', 'subtotal'));
+{
+    /**
+     * @var User $user
+     */
+    $user = auth()->user();
+    $cart = $user->cart()->first();
+
+    if (!$cart) {
+        $cart = Cart::create(['user_id' => $user->id]);
     }
+
+    // Eager load mối quan hệ 'ticket' để lấy thông tin ticket ngay lập tức
+    $cartItems = CartItem::with('ticket')->where('cart_id', $cart->id)->get();
+
+    $totalQuantity = $cartItems->sum('quantity');
+    $subtotal = $cartItems->sum(function ($item) {
+        return $item->ticket ? $item->quantity * $item->ticket->price : 0;
+    });
+   
+    return view('carts.carts', compact('cartItems', 'totalQuantity', 'subtotal'));
+}
+
+
     public function addToCart(Request $request)
     {
         $ticketId = $request->ticket_id;

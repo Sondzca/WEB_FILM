@@ -90,5 +90,5 @@ Route::resource('user/carts', CartController::class);
 
     //route chức năng
     Route::resource('user/wallet', WalletController::class);
-});
+
 
