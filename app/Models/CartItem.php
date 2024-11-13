@@ -16,8 +16,8 @@ class CartItem extends Model
         return $this->belongsTo(Cart::class);
     }
 
-    public function product()
+    public function tickets()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Ticket::class);
     }
 }
