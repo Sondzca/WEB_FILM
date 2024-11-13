@@ -9,15 +9,15 @@ class CartItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['cart_id', 'product_id', 'quantity', 'price', 'total'];
+    protected $fillable = ['cart_id', 'ticket_id', 'quantity', 'price', 'total'];
 
     public function cart()
     {
-        return $this->belongsTo(Cart::class);
+        return $this->belongsTo(Cart::class);  // Một mục giỏ hàng thuộc về một giỏ hàng
     }
 
-    public function product()
+    public function ticket()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Ticket::class);  // Một mục giỏ hàng liên kết với một vé
     }
 }

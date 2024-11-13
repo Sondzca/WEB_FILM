@@ -74,6 +74,4 @@ Route::controller(UserController::class)->middleware(['auth', 'user'])->group(fu
 
 // Định tuyến cho việc thêm sản phẩm vào giỏ hàng
 Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::resource('user/carts', CartController::class);

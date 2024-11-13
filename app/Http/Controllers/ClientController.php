@@ -54,12 +54,7 @@ class ClientController extends Controller
         return view('shop.shop', compact('categories', 'tickets'));
     }
 
-    public function carts()
-    {
-        // Truyền giỏ hàng của người dùng vào view
-        $cartItems = CartItem::where('cart_id', auth()->user()->cart_id)->get();
-        return view('carts.carts', compact('cartItems'));
-    }
+
 
 
     public function contact()

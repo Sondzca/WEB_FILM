@@ -5,98 +5,105 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
     public function index()
     {
-        return view('carts.carts');
+        /**
+         * @var User $user
+         */
+        $user = auth()->user();
+        $cart = $user->cart()->first();
+        if (!$cart) {
+            $cart = Cart::create(['user_id' => $user->id]);
+        }
+        $cartItems = CartItem::where('cart_id', $cart->id)->get();
+        $totalQuantity = $cartItems->sum('quantity');
+        $subtotal = $cartItems->sum(function ($item) {
+            return $item->quantity * $item->ticket->price;
+        });
+        return view('carts.carts', compact('cartItems', 'totalQuantity', 'subtotal'));
+    }
+    public function addToCart(Request $request)
+    {
+        $ticketId = $request->ticket_id;
+
+        if (!$ticketId) {
+            return redirect()->back()->with('error', 'Ticket ID is required!');
+        }
+        $ticket = Ticket::find($ticketId);
+
+        if (!$ticket) {
+            return redirect()->back()->with('error', 'Ticket not found!');
+        }
+        $user = auth()->user();
+        $cart = Cart::firstOrCreate(
+            ['user_id' => $user->id],
+            ['user_id' => $user->id]
+        );
+        $cartItem = CartItem::where('cart_id', $cart->id)
+            ->where('ticket_id', $ticket->id)
+            ->first();
+        if ($cartItem) {
+            $cartItem->quantity += 1;
+        } else {
+            $cartItem = new CartItem([
+                'cart_id' => $cart->id,
+                'ticket_id' => $ticket->id,
+                'quantity' => 1,
+                'price' => $ticket->price,
+            ]);
+        }
+        $cartItem->total = $cartItem->quantity * $cartItem->price;
+        $cartItem->save();
+
+        return redirect()->back()->with('success', 'Ticket added to cart successfully!');
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $cartItemId)
     {
-        // Lấy giỏ hàng hiện tại từ session
-        $cart = session()->get('cart', []);
+        $cartItem = CartItem::findOrFail($cartItemId);
+        $newQuantity = $request->input('quantity');
 
-        // Kiểm tra xem có dữ liệu quantity được gửi từ form không
-        if ($request->has('quantity')) {
-            // Duyệt qua các sản phẩm trong giỏ hàng
-            foreach ($request->quantity as $id => $quantity) {
-                if (isset($cart[$id])) {
-                    // Cập nhật số lượng cho sản phẩm
-                    $cart[$id]['quantity'] = max(1, (int)$quantity);
-                    // Tính lại tổng giá tiền của từng sản phẩm
-                    $cart[$id]['total'] = $cart[$id]['price'] * $cart[$id]['quantity'];
-                }
-            }
+        // Cập nhật số lượng
+        $cartItem->update(['quantity' => $newQuantity]);
 
-            // Lưu lại giỏ hàng đã cập nhật vào session
-            session()->put('cart', $cart);
-
-            // Chuyển hướng với thông báo thành công
-            return redirect()->route('cart.index')->with('success', 'Cart updated successfully');
-        }
-
-        // Nếu không có dữ liệu quantity, chuyển hướng lại với lỗi
-        return redirect()->back()->withErrors('No quantities provided for update.');
-    }
-
-    // In CartController.php
-
-    public function remove($id)
-    {
-        $cart = session()->get('cart', []);
-
-        // Remove item from cart by id
-        if (isset($cart[$id])) {
-            unset($cart[$id]);
-            session()->put('cart', $cart);
-        }
-
-        $subtotal = array_reduce($cart, function ($carry, $item) {
-            return $carry + ($item['price'] * $item['quantity']);
-        }, 0);
+        // Tính toán lại tổng tiền của giỏ hàng
+        $cart = $cartItem->cart;
+        $subtotal = $cart->items->sum(function ($item) {
+            return $item->quantity * $item->ticket->price;
+        });
 
         return response()->json([
             'success' => true,
             'subtotal' => $subtotal,
             'subtotalFormatted' => number_format($subtotal, 0, ',', '.') . ' VNĐ',
+            'total' => $subtotal // Cập nhật total (nếu cần)
         ]);
     }
 
+    // Xóa sản phẩm khỏi giỏ hàng
+    // CartController.php
 
-
-
-    public function addToCart(Request $request)
+    public function destroy($id)
     {
-        // Tìm vé theo ID
-        $ticket = Ticket::findOrFail($request->ticket_id);
+        $cartItem = CartItem::find($id);
 
-        // Lấy giỏ hàng từ session hoặc khởi tạo mảng rỗng nếu chưa có
-        $cart = session()->get('cart', []);
+        if ($cartItem) {
+            // Xóa sản phẩm khỏi giỏ hàng
+            $cartItem->delete();
 
-        // Kiểm tra nếu vé đã có trong giỏ hàng
-        if (isset($cart[$ticket->id])) {
-            // Nếu đã tồn tại, tăng số lượng
-            $cart[$ticket->id]['quantity']++;
-        } else {
-            // Nếu chưa có, thêm vé mới vào giỏ hàng
-            $cart[$ticket->id] = [
-                'id' => $ticket->id,
-                'name' => $ticket->name,
-                'price' => $ticket->price,
-                'quantity' => 1,
-                'image' => $ticket->image,
-                'category' => $ticket->category->name
-            ];
+            // Tính lại tổng giỏ hàng
+            $subtotal = CartItem::where('user_id', auth()->id())->sum(DB::raw('quantity * price'));
+
+            // Quay lại trang giỏ hàng và trả về thông báo
+            return back()->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng')->with('subtotal', $subtotal);
         }
 
-        // Cập nhật giỏ hàng trong session
-        session()->put('cart', $cart);
-
-        // Chuyển hướng lại với thông báo thành công
-        return redirect()->back()->with('success', 'Đã thêm vé vào giỏ hàng thành công!');
+        return back()->with('error', 'Không tìm thấy sản phẩm trong giỏ hàng');
     }
 }

@@ -14,11 +14,11 @@ class Cart extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);  // Một giỏ hàng thuộc về một người dùng
     }
 
-    public function items()
+    public function cartItems()
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(CartItem::class);  // Một giỏ hàng có nhiều mục trong giỏ hàng
     }
 }

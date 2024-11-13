@@ -105,14 +105,13 @@
                                     </li>
                                     <li>
                                         @php
-                                            $cart = session()->get('cart', []);
-                                            $cartCount = array_sum(array_column($cart, 'quantity'));
+                                            // Assuming each user has a cart or you can filter by `user_id`
+                                            $cartCount = \DB::table('cart_items')->sum('quantity');
                                         @endphp
-                                        <a href="{{ route('cart.index') }}" class="site-cart">
+                                        <a href="{{ route('carts.index') }}" class="site-cart">
                                             <span class="icon icon-shopping_cart"></span>
                                             <span class="count">{{ $cartCount }}</span>
                                         </a>
-
                                     </li>
                                     <li class="d-inline-block d-md-none ml-md-0"><a href="#"
                                             class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a>
