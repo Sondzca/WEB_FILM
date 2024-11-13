@@ -1,14 +1,14 @@
 @extends('LayoutClients.master')
 
 @section('title')
-    Carts
+    Cart
 @endsection
 
 @section('content_client')
     <div class="bg-light py-3">
         <div class="container">
             <div class="row">
-                <div class="col-md-12 mb-0"><a href="{{ route('index') }}">Home</a> <span class="mx-2 mb-0">/</span> <strong
+                <div class="col-md-12 mb-0"><a href="">Home</a> <span class="mx-2 mb-0">/</span> <strong
                         class="text-black">Cart</strong></div>
             </div>
         </div>
@@ -17,13 +17,14 @@
     <div class="site-section">
         <div class="container">
             <div class="row mb-5">
-                <form class="col-md-12" method="post">
+                <form class="col-md-12" action="" method="POST">
+                    @csrf
                     <div class="site-blocks-table">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th class="product-thumbnail">Image</th>
-                                    <th class="product-name">Product</th>
+                                    <th class="product-name">Ticket</th>
                                     <th class="product-price">Price</th>
                                     <th class="product-quantity">Quantity</th>
                                     <th class="product-total">Total</th>
@@ -31,59 +32,53 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="product-thumbnail">
-                                        <img src="{{ asset('client/images/cloth_1.jpg') }}" alt="Image" class="img-fluid">
-                                    </td>
-                                    <td class="product-name">
-                                        <h2 class="h5 text-black">Top Up T-Shirt</h2>
-                                    </td>
-                                    <td>$49.00</td>
-                                    <td>
-                                        <div class="input-group mb-3" style="max-width: 120px;">
-                                            <div class="input-group-prepend">
-                                                <button class="btn btn-outline-primary js-btn-minus"
-                                                    type="button">&minus;</button>
-                                            </div>
-                                            <input type="text" class="form-control text-center" value="1"
-                                                placeholder="" aria-label="Example text with button addon"
-                                                aria-describedby="button-addon1">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-outline-primary js-btn-plus"
-                                                    type="button">&plus;</button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>$49.00</td>
-                                    <td><a href="#" class="btn btn-primary btn-sm">X</a></td>
-                                </tr>
+                                @php
+                                    $subtotal = 0;
+                                @endphp
 
-                                <tr>
-                                    <td class="product-thumbnail">
-                                        <img src="{{ asset('client/images/cloth_2.jpg') }}" alt="Image" class="img-fluid">
-                                    </td>
-                                    <td class="product-name">
-                                        <h2 class="h5 text-black">Polo Shirt</h2>
-                                    </td>
-                                    <td>$49.00</td>
-                                    <td>
-                                        <div class="input-group mb-3" style="max-width: 120px;">
-                                            <div class="input-group-prepend">
-                                                <button class="btn btn-outline-primary js-btn-minus"
-                                                    type="button">&minus;</button>
+                                @forelse($cartItems as $item)
+                                    <tr data-id="{{ $item->id }}">
+                                        <td class="product-thumbnail">
+                                            <img src="{{ asset('storage/' . $item->ticket->image) }}"
+                                                alt="{{ $item->ticket->name }}" class="img-fluid">
+                                        </td>
+                                        <td class="product-name">
+                                            <h2 class="h5 text-black">{{ $item->ticket->name }}</h2>
+                                        </td>
+                                        <td class="product-price">{{ number_format($item->ticket->price, 0, ',', '.') }} VNĐ
+                                        </td>
+                                        <td>
+                                            <div class="input-group mb-3" style="max-width: 120px;">
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-outline-primary js-btn-minus"
+                                                        type="button">&minus;</button>
+                                                </div>
+                                                <input type="number" class="form-control text-center quantity"
+                                                    name="quantity[{{ $item->id }}]" value="{{ $item->quantity }}"
+                                                    min="1" aria-label="Quantity"
+                                                    data-price="{{ $item->ticket->price }}">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-primary js-btn-plus"
+                                                        type="button">&plus;</button>
+                                                </div>
                                             </div>
-                                            <input type="text" class="form-control text-center" value="1"
-                                                placeholder="" aria-label="Example text with button addon"
-                                                aria-describedby="button-addon1">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-outline-primary js-btn-plus"
-                                                    type="button">&plus;</button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>$49.00</td>
-                                    <td><a href="#" class="btn btn-primary btn-sm">X</a></td>
-                                </tr>
+                                        </td>
+                                        <td class="product-total">
+                                            {{ number_format($item->quantity * $item->ticket->price, 0, ',', '.') }} VNĐ
+                                        </td>
+                                        <td class="product-remove">
+                                            <button type="button" class="btn btn-danger btn-sm remove-item"
+                                                data-id="{{ $item->id }}">X</button>
+                                        </td>
+                                    </tr>
+                                    @php
+                                        $subtotal += $item->quantity * $item->ticket->price;
+                                    @endphp
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">Your cart is empty</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -92,27 +87,10 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="row mb-5">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <button class="btn btn-primary btn-sm btn-block">Update Cart</button>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label class="text-black h4" for="coupon">Coupon</label>
-                            <p>Enter your coupon code if you have one.</p>
-                        </div>
-                        <div class="col-md-8 mb-3 mb-md-0">
-                            <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
-                        </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-primary btn-sm">Apply Coupon</button>
-                        </div>
-                    </div>
+                    <button class="btn btn-primary btn-sm btn-block">Update Cart</button>
+                    <a href="{{ route('index') }}" class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</a>
                 </div>
+
                 <div class="col-md-6 pl-5">
                     <div class="row justify-content-end">
                         <div class="col-md-7">
@@ -126,7 +104,8 @@
                                     <span class="text-black">Subtotal</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">$230.00</strong>
+                                    <strong class="text-black" id="subtotal">{{ number_format($subtotal, 0, ',', '.') }}
+                                        VNĐ</strong>
                                 </div>
                             </div>
                             <div class="row mb-5">
@@ -134,14 +113,13 @@
                                     <span class="text-black">Total</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">$230.00</strong>
+                                    <strong class="text-black" id="total">{{ number_format($subtotal, 0, ',', '.') }}
+                                        VNĐ</strong>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-12">
-                                    <button class="btn btn-primary btn-lg py-3 btn-block"
-                                        onclick="window.location='{{ asset('client/checkout.html') }}'">Proceed To Checkout</button>
+                                    <button class="btn btn-primary btn-lg py-3 btn-block">Proceed To Checkout</button>
                                 </div>
                             </div>
                         </div>
@@ -150,4 +128,107 @@
             </div>
         </div>
     </div>
+
+    <!-- AJAX Script for Update Quantity and Remove Item -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfTokenMeta) {
+                console.error("CSRF token meta tag not found!");
+                return;
+            }
+
+            const csrfToken = csrfTokenMeta.getAttribute('content');
+
+            // Hàm tính lại tổng giỏ hàng và cập nhật subtotal và total
+            function updateCartTotals(subtotal) {
+                // Cập nhật subtotal và total
+                document.getElementById('subtotal').textContent = numberWithCommas(subtotal) + ' VNĐ';
+                document.getElementById('total').textContent = numberWithCommas(subtotal) + ' VNĐ';
+            }
+
+            // Hàm chuyển đổi số thành định dạng có dấu phân cách ngàn
+            function numberWithCommas(x) {
+                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            // Tăng hoặc giảm số lượng sản phẩm
+            document.querySelectorAll('.js-btn-plus, .js-btn-minus').forEach(button => {
+                button.addEventListener('click', function() {
+                    const inputField = this.closest('td').querySelector('.quantity');
+                    let currentQuantity = parseInt(inputField.value);
+
+                    // Điều chỉnh giá trị tăng hoặc giảm một đơn vị
+                    let newQuantity = this.classList.contains('js-btn-plus') ? currentQuantity + 1 :
+                        currentQuantity - 1;
+                    if (newQuantity < 1) return; // Không giảm xuống dưới 1
+
+                    const cartItemId = this.closest('tr').dataset.id;
+                    const price = parseInt(inputField.dataset.price);
+
+                    // Cập nhật giao diện ngay lập tức
+                    inputField.value = newQuantity;
+
+                    // Tính lại tổng cho sản phẩm
+                    const totalCell = this.closest('tr').querySelector('.product-total');
+                    totalCell.textContent = numberWithCommas(newQuantity * price) + ' VNĐ';
+
+                    // Gửi yêu cầu cập nhật số lượng sản phẩm (sử dụng PUT thay vì POST)
+                    fetch(`/user/carts/${cartItemId}`, {
+                            method: 'PUT', // Dùng PUT để cập nhật
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                quantity: newQuantity
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Cập nhật lại tổng giỏ hàng từ server
+                                updateCartTotals(data.subtotal);
+                                alert('Số lượng sản phẩm đã được cập nhật thành công!');
+                            } else {
+                                alert('Không thể cập nhật số lượng');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
+
+            // Xóa sản phẩm
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemId = this.dataset.id;
+
+                    if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+                        fetch(`/user/carts/${itemId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Xóa sản phẩm khỏi DOM
+                                    document.querySelector(`tr[data-id="${itemId}"]`).remove();
+                                    // Cập nhật lại tổng giỏ hàng từ server
+                                    updateCartTotals(data.subtotal);
+                                    alert('Sản phẩm đã được xóa khỏi giỏ hàng!');
+                                    // Reload lại trang
+                                    location.reload(); // Thực hiện load lại trang
+                                } else {
+                                    alert('Không thể xóa sản phẩm');
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

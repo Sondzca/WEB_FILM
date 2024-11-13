@@ -4,6 +4,7 @@
 <head>
     <title>@yield('title')</title>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mukta:300,400,700">
@@ -123,11 +124,14 @@
                                         @endauth
 
                                     </li>
-                                    <li><a href="#"><span class="icon icon-heart-o"></span></a></li>
                                     <li>
-                                        <a href="{{ route('carts') }}" class="site-cart">
+                                        @php
+                                            // Assuming each user has a cart or you can filter by `user_id`
+                                            $cartCount = \DB::table('cart_items')->sum('quantity');
+                                        @endphp
+                                        <a href="{{ route('carts.index') }}" class="site-cart">
                                             <span class="icon icon-shopping_cart"></span>
-                                            <span class="count">2</span>
+                                            <span class="count">{{ $cartCount }}</span>
                                         </a>
                                     </li>
                                     <li class="d-inline-block d-md-none ml-md-0"><a href="#"

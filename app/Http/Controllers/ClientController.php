@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+
 
 class ClientController extends Controller
 {
@@ -52,10 +54,8 @@ class ClientController extends Controller
         return view('shop.shop', compact('categories', 'tickets'));
     }
 
-    public function carts()
-    {
-        return view('carts.carts');
-    }
+
+
 
     public function contact()
     {

@@ -74,10 +74,9 @@ class CategoryController extends Controller
         if ($category->products()->count() > 0) {
             return back()->with('error', 'Không thể xóa danh mục này vì có sản phẩm liên quan.');
         }
-    
+
         // Nếu không có sản phẩm liên quan, thực hiện xóa
         $category->delete();
         return back()->with('success', 'Xóa thành công');
     }
-    
 }
