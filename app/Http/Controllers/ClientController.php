@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+
 
 class ClientController extends Controller
 {
@@ -54,8 +56,11 @@ class ClientController extends Controller
 
     public function carts()
     {
-        return view('carts.carts');
+        // Truyền giỏ hàng của người dùng vào view
+        $cartItems = CartItem::where('cart_id', auth()->user()->cart_id)->get();
+        return view('carts.carts', compact('cartItems'));
     }
+
 
     public function contact()
     {

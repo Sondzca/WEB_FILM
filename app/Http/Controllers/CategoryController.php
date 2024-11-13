@@ -12,9 +12,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount('ticket')->paginate(5);
+        $data = Category::withCount('tickets')->paginate(5);
 
-        return view('categories.index', compact('categories'));
+        return view('categories.index', compact('data'));
     }
 
     /**
@@ -74,10 +74,9 @@ class CategoryController extends Controller
         if ($category->products()->count() > 0) {
             return back()->with('error', 'Không thể xóa danh mục này vì có sản phẩm liên quan.');
         }
-    
+
         // Nếu không có sản phẩm liên quan, thực hiện xóa
         $category->delete();
         return back()->with('success', 'Xóa thành công');
     }
-    
 }

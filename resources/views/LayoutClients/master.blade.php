@@ -4,6 +4,7 @@
 <head>
     <title>@yield('title')</title>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mukta:300,400,700">
@@ -89,7 +90,8 @@
                                                     $redirectRoute = 'admin.dashboard';
                                                 }
                                             @endphp
-                                            <span style="color: green">Xin chào:  {{ Auth::user()->fullname ?? Auth::user()->email }}</span>
+                                            <span style="color: green">Xin chào:
+                                                {{ Auth::user()->fullname ?? Auth::user()->email }}</span>
 
                                             <a href="{{ route($redirectRoute) }}">
                                                 <span class="icon icon-person ms-2"></span>
@@ -101,12 +103,16 @@
                                         @endauth
 
                                     </li>
-                                    <li><a href="#"><span class="icon icon-heart-o"></span></a></li>
                                     <li>
-                                        <a href="{{ route('carts') }}" class="site-cart">
+                                        @php
+                                            $cart = session()->get('cart', []);
+                                            $cartCount = array_sum(array_column($cart, 'quantity'));
+                                        @endphp
+                                        <a href="{{ route('cart.index') }}" class="site-cart">
                                             <span class="icon icon-shopping_cart"></span>
-                                            <span class="count">2</span>
+                                            <span class="count">{{ $cartCount }}</span>
                                         </a>
+
                                     </li>
                                     <li class="d-inline-block d-md-none ml-md-0"><a href="#"
                                             class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a>
