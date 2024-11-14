@@ -39,27 +39,32 @@
                                 @forelse($cartItems as $item)
                                     <tr data-id="{{ $item->id }}">
                                         <td class="product-thumbnail">
-                                            @if($item->ticket)
-                                                <img src="{{ asset('storage/' . $item->ticket->image) }}" alt="{{ $item->ticket->name }}" class="img-fluid">
+                                            @if ($item->ticket)
+                                                <img src="{{ asset('storage/' . $item->ticket->image) }}"
+                                                    alt="{{ $item->ticket->name }}" class="img-fluid">
                                             @else
-                                                <img src="{{ asset('storage/default-image.jpg') }}" alt="Default Ticket Image" class="img-fluid">
+                                                <img src="{{ asset('storage/default-image.jpg') }}"
+                                                    alt="Default Ticket Image" class="img-fluid">
                                             @endif
                                         </td>
                                         <td class="product-name">
                                             <h2 class="h5 text-black">{{ $item->ticket->name }}</h2>
                                         </td>
-                                        <td class="product-price">{{ number_format($item->ticket->price, 0, ',', '.') }} VNĐ</td>
+                                        <td class="product-price">{{ number_format($item->ticket->price, 0, ',', '.') }} VNĐ
+                                        </td>
                                         <td>
                                             <div class="input-group mb-3" style="max-width: 120px;">
                                                 <div class="input-group-prepend">
-                                                    <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
+                                                    <button class="btn btn-outline-primary js-btn-minus"
+                                                        type="button">&minus;</button>
                                                 </div>
                                                 <input type="number" class="form-control text-center quantity"
                                                     name="quantity[{{ $item->id }}]" value="{{ $item->quantity }}"
                                                     min="1" aria-label="Quantity"
                                                     data-price="{{ $item->ticket->price }}">
                                                 <div class="input-group-append">
-                                                    <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
+                                                    <button class="btn btn-outline-primary js-btn-plus"
+                                                        type="button">&plus;</button>
                                                 </div>
                                             </div>
                                         </td>
@@ -87,7 +92,7 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <button class="btn btn-primary btn-sm btn-block">Update Cart</button>
+                    {{-- <button class="btn btn-primary btn-sm btn-block">Update Cart</button> --}}
                     <a href="{{ route('index') }}" class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</a>
                 </div>
 
@@ -140,42 +145,43 @@
 
             const csrfToken = csrfTokenMeta.getAttribute('content');
 
-            // Hàm tính lại tổng giỏ hàng và cập nhật subtotal và total
+            // Hàm cập nhật subtotal và total
             function updateCartTotals(subtotal) {
-                // Cập nhật subtotal và total
                 document.getElementById('subtotal').textContent = numberWithCommas(subtotal) + ' VNĐ';
                 document.getElementById('total').textContent = numberWithCommas(subtotal) + ' VNĐ';
             }
 
-            // Hàm chuyển đổi số thành định dạng có dấu phân cách ngàn
+            // Hàm định dạng số có dấu phân cách
             function numberWithCommas(x) {
                 return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
 
-            // Tăng hoặc giảm số lượng sản phẩm
+            // Sự kiện tăng/giảm số lượng
             document.querySelectorAll('.js-btn-plus, .js-btn-minus').forEach(button => {
                 button.addEventListener('click', function() {
                     const inputField = this.closest('td').querySelector('.quantity');
                     let currentQuantity = parseInt(inputField.value);
 
-                    // Điều chỉnh giá trị tăng hoặc giảm một đơn vị
-                    let newQuantity = this.classList.contains('js-btn-plus') ? currentQuantity + 1 :
-                        currentQuantity - 1;
-                    if (newQuantity < 1) return; // Không giảm xuống dưới 1
+                    // Điều chỉnh số lượng tăng hoặc giảm từng số 1
+                    let newQuantity = this.classList.contains('js-btn-plus') ? currentQuantity + 0 :
+                        currentQuantity - 0;
+
+                    // Đảm bảo số lượng không giảm xuống dưới 1
+                    if (newQuantity < 1) return;
 
                     const cartItemId = this.closest('tr').dataset.id;
                     const price = parseInt(inputField.dataset.price);
 
-                    // Cập nhật giao diện ngay lập tức
+                    // Cập nhật số lượng ngay trên giao diện
                     inputField.value = newQuantity;
 
-                    // Tính lại tổng cho sản phẩm
+                    // Cập nhật tổng cho sản phẩm
                     const totalCell = this.closest('tr').querySelector('.product-total');
                     totalCell.textContent = numberWithCommas(newQuantity * price) + ' VNĐ';
 
-                    // Gửi yêu cầu cập nhật số lượng sản phẩm (sử dụng PUT thay vì POST)
+                    // Gửi yêu cầu cập nhật số lượng đến server
                     fetch(`/user/carts/${cartItemId}`, {
-                            method: 'PUT', // Dùng PUT để cập nhật
+                            method: 'PUT',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
                                 'Content-Type': 'application/json'
@@ -187,9 +193,8 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Cập nhật lại tổng giỏ hàng từ server
+                                // Cập nhật lại tổng giỏ hàng từ server mà không cần reload trang
                                 updateCartTotals(data.subtotal);
-                                alert('Số lượng sản phẩm đã được cập nhật thành công!');
                             } else {
                                 alert('Không thể cập nhật số lượng');
                             }
@@ -198,7 +203,9 @@
                 });
             });
 
-            // Xóa sản phẩm
+
+
+            // Sự kiện xóa sản phẩm
             document.querySelectorAll('.remove-item').forEach(button => {
                 button.addEventListener('click', function() {
                     const itemId = this.dataset.id;
@@ -214,9 +221,9 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
+                                    // Xóa dòng sản phẩm trên giao diện
                                     this.closest('tr').remove();
-                                    updateCartTotals(data.subtotal); // Cập nhật lại tổng giỏ hàng
-                                    alert('Sản phẩm đã được xóa khỏi giỏ hàng!');
+                                    updateCartTotals(data.subtotal);
                                 } else {
                                     alert('Không thể xóa sản phẩm');
                                 }
