@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WalletController;
@@ -45,11 +46,8 @@ Route::controller(AccountController::class)->group(function () {
 Route::controller(ClientController::class)->group(function () {
     Route::get('/', 'index')->name('index');
     Route::get('clients/shop', 'shop')->name('shop.index');
-    Route::get('clients/carts', 'carts')->name('carts');
     Route::get('clients/contact', 'contact')->name('contact');
     Route::get('clients/about', 'about')->name('about');
-    Route::get('clients/detail', 'detail')->name('detail');
-    Route::get('clients/checkout', 'checkout')->name('checkout');
     Route::get('ticket/{id}', [TicketController::class, 'show'])->name('ticket.show');
     Route::get('/search-tickets', [TicketController::class, 'searchTickets'])->name('search.tickets');
 });
@@ -80,15 +78,9 @@ Route::controller(UserController::class)->middleware(['auth', 'user'])->group(fu
     Route::get('user/edit', 'edit')->name('user.edit');
     Route::post('user/update', 'update')->name('user.update');
 
-});
-
-
-// Định tuyến cho việc thêm sản phẩm vào giỏ hàng
-Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
-Route::resource('user/carts', CartController::class);
-
-
-    //route chức năng
+    //route chuc nang 
+    Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::resource('user/carts', CartController::class);
     Route::resource('user/wallet', WalletController::class);
-
-
+    Route::resource('user/orders', OrderController::class);
+});

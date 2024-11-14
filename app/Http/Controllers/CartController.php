@@ -16,25 +16,27 @@ class CartController extends Controller
         /**
          * @var User $user
          */
+
         $user = auth()->user();
         $cart = $user->cart()->first();
 
-        // Nếu giỏ hàng không tồn tại, tạo mới
         if (!$cart) {
             $cart = Cart::create(['user_id' => $user->id]);
         }
 
-        // Eager load mối quan hệ 'ticket' để lấy thông tin ticket ngay lập tức
         $cartItems = CartItem::with('ticket')->where('cart_id', $cart->id)->get();
-
-        // Tính tổng số lượng và tổng tiền
         $totalQuantity = $cartItems->sum('quantity');
         $subtotal = $cartItems->sum(function ($item) {
             return $item->ticket ? $item->quantity * $item->ticket->price : 0;
         });
 
-        return view('carts.carts', compact('cartItems', 'totalQuantity', 'subtotal'));
+        // Call getSolanaPrice from the other controller
+        $otherController = app(\App\Http\Controllers\TicketController::class);
+        $solRate = $otherController->getSolanaPrice();
+
+        return view('carts.carts', compact('cartItems', 'totalQuantity', 'subtotal', 'solRate'));
     }
+
 
     public function addToCart(Request $request)
     {

@@ -69,7 +69,7 @@
                                             </div>
                                         </td>
                                         <td class="product-total">
-                                            {{ number_format($item->quantity * $item->ticket->price, 0, ',', '.') }} VNĐ
+                                            {{ number_format($item->quantity * $item->ticket->price, 0, ',', '.') }} USD
                                         </td>
                                         <td class="product-remove">
                                             <button type="button" class="btn btn-danger btn-sm remove-item"
@@ -110,21 +110,28 @@
                                 </div>
                                 <div class="col-md-6 text-right">
                                     <strong class="text-black" id="subtotal">{{ number_format($subtotal, 0, ',', '.') }}
-                                        VNĐ</strong>
+                                        USD</strong>
                                 </div>
                             </div>
                             <div class="row mb-5">
                                 <div class="col-md-6">
-                                    <span class="text-black">Total</span>
+                                    <span class="text-black">Total Amount</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black" id="total">{{ number_format($subtotal, 0, ',', '.') }}
-                                        VNĐ</strong>
+                                    <strong class="text-black" id="total">
+                                        {{ number_format($subtotal, 0, ',', '.') }} USD
+                                        <br>
+                                        @if ($solRate)
+                                            <span>≈ {{ number_format($subtotal / $solRate, 4) }} SOL</span>
+                                        @else
+                                            <span>Solana price unavailable</span>
+                                        @endif
+                                    </strong>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <button class="btn btn-primary btn-lg py-3 btn-block">Proceed To Checkout</button>
+                                    <a href="#" class="btn btn-primary btn-lg py-3 btn-block">Proceed To Checkout</a>
                                 </div>
                             </div>
                         </div>
@@ -142,96 +149,98 @@
                 console.error("CSRF token meta tag not found!");
                 return;
             }
-
+    
             const csrfToken = csrfTokenMeta.getAttribute('content');
-
-            // Hàm cập nhật subtotal và total
+            const solRate = {{ $solRate ?? 'null' }}; // Fetch the Solana rate from the server
+    
+            // Function to update subtotal, total, and SOL equivalent
             function updateCartTotals(subtotal) {
-                document.getElementById('subtotal').textContent = numberWithCommas(subtotal) + ' VNĐ';
-                document.getElementById('total').textContent = numberWithCommas(subtotal) + ' VNĐ';
+                const subtotalElem = document.getElementById('subtotal');
+                const totalElem = document.getElementById('total');
+    
+                subtotalElem.textContent = numberWithCommas(subtotal) + ' USD';
+                totalElem.innerHTML = numberWithCommas(subtotal) + ' USD' + 
+                    (solRate ? `<br><span>≈ ${numberWithCommas((subtotal / solRate).toFixed(4))} SOL</span>` : '<br><span>Solana price unavailable</span>');
             }
-
-            // Hàm định dạng số có dấu phân cách
+    
+            // Helper function to format numbers with commas
             function numberWithCommas(x) {
                 return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
-
-            // Sự kiện tăng/giảm số lượng
+    
+            // Event listeners for increment and decrement quantity buttons
             document.querySelectorAll('.js-btn-plus, .js-btn-minus').forEach(button => {
                 button.addEventListener('click', function() {
                     const inputField = this.closest('td').querySelector('.quantity');
                     let currentQuantity = parseInt(inputField.value);
-
-                    // Điều chỉnh số lượng tăng hoặc giảm từng số 1
-                    let newQuantity = this.classList.contains('js-btn-plus') ? currentQuantity + 0 :
-                        currentQuantity - 0;
-
-                    // Đảm bảo số lượng không giảm xuống dưới 1
+    
+                    // Increment or decrement the quantity
+                    let newQuantity = this.classList.contains('js-btn-plus') ? currentQuantity + 1 : currentQuantity - 1;
+    
+                    // Ensure quantity does not go below 1
                     if (newQuantity < 1) return;
-
+    
                     const cartItemId = this.closest('tr').dataset.id;
                     const price = parseInt(inputField.dataset.price);
-
-                    // Cập nhật số lượng ngay trên giao diện
+    
+                    // Update quantity on the interface
                     inputField.value = newQuantity;
-
-                    // Cập nhật tổng cho sản phẩm
+    
+                    // Update the product total for this row
                     const totalCell = this.closest('tr').querySelector('.product-total');
-                    totalCell.textContent = numberWithCommas(newQuantity * price) + ' VNĐ';
-
-                    // Gửi yêu cầu cập nhật số lượng đến server
+                    totalCell.textContent = numberWithCommas(newQuantity * price) + ' USD';
+    
+                    // Send request to update quantity on server
                     fetch(`/user/carts/${cartItemId}`, {
-                            method: 'PUT',
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ quantity: newQuantity })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update the cart totals based on the new subtotal from the server
+                            updateCartTotals(data.subtotal);
+                        } else {
+                            alert('Unable to update quantity');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+    
+            // Event listeners for removing items
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemId = this.dataset.id;
+    
+                    if (confirm("Are you sure you want to remove this item from the cart?")) {
+                        fetch(`/user/carts/${itemId}`, {
+                            method: 'DELETE',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
                                 'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                quantity: newQuantity
-                            })
+                            }
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Cập nhật lại tổng giỏ hàng từ server mà không cần reload trang
+                                // Remove the row from the interface
+                                this.closest('tr').remove();
+                                // Update cart totals from server response
                                 updateCartTotals(data.subtotal);
                             } else {
-                                alert('Không thể cập nhật số lượng');
+                                alert('Unable to remove item');
                             }
                         })
                         .catch(error => console.error('Error:', error));
-                });
-            });
-
-
-
-            // Sự kiện xóa sản phẩm
-            document.querySelectorAll('.remove-item').forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemId = this.dataset.id;
-
-                    if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
-                        fetch(`/user/carts/${itemId}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': csrfToken,
-                                    'Content-Type': 'application/json'
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    // Xóa dòng sản phẩm trên giao diện
-                                    this.closest('tr').remove();
-                                    updateCartTotals(data.subtotal);
-                                } else {
-                                    alert('Không thể xóa sản phẩm');
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
                     }
                 });
             });
         });
     </script>
+    
 @endsection

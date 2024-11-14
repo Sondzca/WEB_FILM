@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller
 {
-    
+
     public function index()
     {
         $wallet = Auth::user()->wallet;
@@ -16,13 +16,10 @@ class WalletController extends Controller
         return view('wallet.wallet', compact('wallet'));
     }
 
-    
-    public function create()
-    {
-        
-    }
 
-  
+    public function create() {}
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -30,7 +27,7 @@ class WalletController extends Controller
         ]);
 
         // Lưu địa chỉ ví vào bảng users
-         /**
+        /**
          * @var User $user
          */
         $user = Auth::user();
@@ -54,7 +51,26 @@ class WalletController extends Controller
 
     public function update(Request $request, $id)
     {
-        //
+        /**
+         * @var User $user
+         */
+        // Lấy thông tin người dùng hiện tại
+        $user = auth()->user();
+
+        // Kiểm tra xem ví có tồn tại
+        if ($user->wallet) {
+            // Xóa địa chỉ ví trong cơ sở dữ liệu
+            $user->wallet = null;
+            $user->save();
+
+            // Xử lý các thay đổi trong session hoặc localStorage
+            $request->session()->flash('message', 'Wallet disconnected successfully.');
+            return redirect()->route('wallet.index');  // Redirect về trang ví hoặc trang nào đó
+        }
+
+        // Nếu không có ví, hiển thị thông báo lỗi
+        $request->session()->flash('error', 'No wallet connected.');
+        return redirect()->route('wallet.index');
     }
 
 

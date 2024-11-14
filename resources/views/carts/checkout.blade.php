@@ -15,250 +15,148 @@
         </div>
     </div>
 
-    <div class="site-section">
+    <div class="text-center">
+        <div class="border p-4 rounded" role="alert">
+            Returning customer? <a href="#">Click here</a> to login
+        </div>
+    </div>
+
+    <div class="site-section text-center">
         <div class="container">
-            <div class="row mb-5">
-                <div class="col-md-12">
-                    <div class="border p-4 rounded" role="alert">
-                        Returning customer? <a href="#">Click here</a> to login
-                    </div>
-                </div>
-            </div>
             <div class="row">
-                <div class="col-md-6 mb-5 mb-md-0">
-                    <h2 class="h3 mb-3 text-black">Billing Details</h2>
-                    <div class="p-3 p-lg-5 border">
-                        <div class="form-group">
-                            <label for="c_country" class="text-black">Country <span class="text-danger">*</span></label>
-                            <select id="c_country" class="form-control">
-                                <option value="1">Select a country</option>
-                                <option value="2">bangladesh</option>
-                                <option value="3">Algeria</option>
-                                <option value="4">Afghanistan</option>
-                                <option value="5">Ghana</option>
-                                <option value="6">Albania</option>
-                                <option value="7">Bahrain</option>
-                                <option value="8">Colombia</option>
-                                <option value="9">Dominican Republic</option>
-                            </select>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-md-6">
-                                <label for="c_fname" class="text-black">First Name <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_fname" name="c_fname">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="c_lname" class="text-black">Last Name <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_lname" name="c_lname">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-md-12">
-                                <label for="c_companyname" class="text-black">Company Name </label>
-                                <input type="text" class="form-control" id="c_companyname" name="c_companyname">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-md-12">
-                                <label for="c_address" class="text-black">Address <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_address" name="c_address"
-                                    placeholder="Street address">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Apartment, suite, unit etc. (optional)">
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-md-6">
-                                <label for="c_state_country" class="text-black">State / Country <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_state_country" name="c_state_country">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="c_postal_zip" class="text-black">Posta / Zip <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-5">
-                            <div class="col-md-6">
-                                <label for="c_email_address" class="text-black">Email Address <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_email_address" name="c_email_address">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_phone" name="c_phone"
-                                    placeholder="Phone Number">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="c_create_account" class="text-black" data-toggle="collapse"
-                                href="#create_an_account" role="button" aria-expanded="false"
-                                aria-controls="create_an_account"><input type="checkbox" value="1"
-                                    id="c_create_account"> Create an account?</label>
-                            <div class="collapse" id="create_an_account">
-                                <div class="py-2">
-                                    <p class="mb-3">Create an account by entering the information below. If you are a
-                                        returning customer please login at the top of the page.</p>
-                                    <div class="form-group">
-                                        <label for="c_account_password" class="text-black">Account Password</label>
-                                        <input type="email" class="form-control" id="c_account_password"
-                                            name="c_account_password" placeholder="">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label for="c_ship_different_address" class="text-black" data-toggle="collapse"
-                                href="#ship_different_address" role="button" aria-expanded="false"
-                                aria-controls="ship_different_address"><input type="checkbox" value="1"
-                                    id="c_ship_different_address"> Ship To A Different Address?</label>
-                            <div class="collapse" id="ship_different_address">
-                                <div class="py-2">
-
-                                    <div class="form-group">
-                                        <label for="c_diff_country" class="text-black">Country <span
-                                                class="text-danger">*</span></label>
-                                        <select id="c_diff_country" class="form-control">
-                                            <option value="1">Select a country</option>
-                                            <option value="2">bangladesh</option>
-                                            <option value="3">Algeria</option>
-                                            <option value="4">Afghanistan</option>
-                                            <option value="5">Ghana</option>
-                                            <option value="6">Albania</option>
-                                            <option value="7">Bahrain</option>
-                                            <option value="8">Colombia</option>
-                                            <option value="9">Dominican Republic</option>
-                                        </select>
-                                    </div>
-
-
-                                    <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label for="c_diff_fname" class="text-black">First Name <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="c_diff_fname"
-                                                name="c_diff_fname">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="c_diff_lname" class="text-black">Last Name <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="c_diff_lname"
-                                                name="c_diff_lname">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <div class="col-md-12">
-                                            <label for="c_diff_companyname" class="text-black">Company Name </label>
-                                            <input type="text" class="form-control" id="c_diff_companyname"
-                                                name="c_diff_companyname">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <div class="col-md-12">
-                                            <label for="c_diff_address" class="text-black">Address <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="c_diff_address"
-                                                name="c_diff_address" placeholder="Street address">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <input type="text" class="form-control"
-                                            placeholder="Apartment, suite, unit etc. (optional)">
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label for="c_diff_state_country" class="text-black">State / Country <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="c_diff_state_country"
-                                                name="c_diff_state_country">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="c_diff_postal_zip" class="text-black">Posta / Zip <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="c_diff_postal_zip"
-                                                name="c_diff_postal_zip">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row mb-5">
-                                        <div class="col-md-6">
-                                            <label for="c_diff_email_address" class="text-black">Email Address <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="c_diff_email_address"
-                                                name="c_diff_email_address">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="c_diff_phone" class="text-black">Phone <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="c_diff_phone"
-                                                name="c_diff_phone" placeholder="Phone Number">
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <h2 class="h3 mb-3 text-black">Your Order</h2>
-                    <div class="p-3 p-lg-5 border">
+                <!-- Your Order Section -->
+                <div class="col-md-8 offset-md-2">
+                    <h2 class="h3 mb-5 text-black" style="font-size: 2.5rem;">Your Order</h2>
+                    <div class="p-4 p-lg-5 border" style="background-color: #f9f9f9;">
                         <ul class="list-unstyled">
-                            <li class="d-flex mb-3">
-                                <span class="text-black">Product</span>
-                                <span class="text-black ml-auto">Total</span>
+                            <li class="d-flex mb-4">
+                                <span class="text-black" style="font-size: 1.25rem; font-weight: bold;">Product</span>
+                                <span class="text-black ml-auto" style="font-size: 1.25rem; font-weight: bold;">Total</span>
                             </li>
-                            <li class="d-flex mb-3">
-                                <span class="text-black">Product Name 1</span>
-                                <span class="text-black ml-auto">$200.00</span>
-                            </li>
-                            <li class="d-flex mb-3">
-                                <span class="text-black">Product Name 2</span>
-                                <span class="text-black ml-auto">$150.00</span>
-                            </li>
-                            <li class="d-flex mb-3">
-                                <span class="text-black">Product Name 3</span>
-                                <span class="text-black ml-auto">$180.00</span>
-                            </li>
-                            <li class="d-flex mb-3">
-                                <span class="text-black">Subtotal</span>
-                                <span class="text-black ml-auto">$530.00</span>
-                            </li>
-                            <li class="d-flex mb-3">
-                                <span class="text-black">Shipping</span>
-                                <span class="text-black ml-auto">$20.00</span>
-                            </li>
-                            <li class="d-flex mb-3">
-                                <span class="text-black">Total</span>
-                                <span class="text-black ml-auto">$550.00</span>
+
+                            <!-- Loop through the cart items -->
+                            @php $totalAmount = 0; @endphp
+                            @foreach ($cartItems as $item)
+                                @php
+                                    $itemTotal = $item->quantity * $item->ticket->price; // Calculate the total for this item
+                                    $totalAmount += $itemTotal; // Add the item total to the overall total
+                                @endphp
+                                <li class="d-flex mb-4 align-items-center">
+                                    <div class="d-flex align-items-center" style="width: 60%;">
+                                        <img src="{{ asset('storage/' . $item->ticket->image) }}"
+                                            alt="{{ $item->ticket->name }}"
+                                            style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
+                                        <span class="text-black"
+                                            style="font-size: 1.125rem;">{{ $item->ticket->name }}</span>
+                                        <span class="text-muted ml-3">x{{ $item->quantity }}</span>
+                                    </div>
+                                    <span class="text-black ml-auto"
+                                        style="font-size: 1.125rem;">${{ number_format($itemTotal, 2) }}</span>
+                                </li>
+                            @endforeach
+
+                            <!-- Total Amount -->
+                            <li class="d-flex mb-4">
+                                <span class="text-black" style="font-size: 1.25rem; font-weight: bold;">Total Amount</span>
+                                <span class="text-black ml-auto" style="font-size: 1.25rem; font-weight: bold;">
+                                    ${{ number_format($totalAmount, 2) }}
+                                </span>
                             </li>
                         </ul>
 
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary btn-lg py-3 btn-block">Proceed To
-                                Checkout</button>
-                        </div>
+                        <!-- Payment Option: Phantom Wallet -->
+                        @if (auth()->user()->wallet)
+                            <div class="form-group mb-4">
+                                <label for="phantom-wallet" class="d-flex align-items-center" style="font-size: 1.125rem;">
+                                    <input type="radio" id="phantom-wallet" name="payment_method" value="phantom"
+                                        style="margin-right: 10px;">
+                                    Pay with Phantom Wallet
+                                </label>
+                                <div id="phantom-balance" class="mt-3" style="display: none;">
+                                    <p style="font-size: 1.125rem;">Your Solana balance: <span
+                                            id="sol-balance">Loading...</span> SOL</p>
+                                </div>
+                            </div>
+                        @else
+                            <div class="form-group mb-4">
+                                <p class="text-danger" style="font-size: 1.125rem;">
+                                    Please connect your Phantom Wallet to proceed with this payment option.
+                                    <a href="{{ route('wallet.index') }}" class="btn btn-link btn-sm"
+                                        style="font-size: 1.125rem;"
+                                        onclick="return confirm('chuyển đén trang kết nối ví')">Connect Wallet</a>
+                                </p>
+                            </div>
+                        @endif
 
+                        <!-- Proceed to Checkout Button -->
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-lg py-3 btn-block"
+                                style="font-size: 1.25rem;">Proceed To Checkout</button>
+                        </div>
                     </div>
                 </div>
+                <!-- End of Your Order Section -->
             </div>
         </div>
     </div>
+
+    <script>
+        // Kiểm tra ví Phantom và hiển thị số dư
+        if (window.solana && window.solana.isPhantom) {
+            const phantomWallet = window.solana;
+
+            const phantomRadio = document.getElementById('phantom-wallet');
+            const balanceDiv = document.getElementById('phantom-balance');
+            const balanceSpan = document.getElementById('sol-balance');
+
+            phantomRadio.addEventListener('change', async () => {
+                if (phantomRadio.checked) {
+                    if (!{{ auth()->user()->wallet ? 'true' : 'false' }}) {
+                        // Nếu ví chưa được kết nối, hỏi người dùng có muốn chuyển hướng đến trang kết nối ví không
+                        const userConfirmed = confirm(
+                            "You have not connected a Phantom Wallet. Would you like to connect your wallet?"
+                        );
+                        if (userConfirmed) {
+                            window.location.href =
+                            "{{ route('wallet.index') }}"; // Chuyển hướng đến trang kết nối ví
+                        } else {
+                            phantomRadio.checked = false; // Hủy chọn "Pay with Phantom Wallet"
+                        }
+                    } else {
+                        try {
+                            // Kết nối ví Phantom
+                            await phantomWallet.connect();
+                            const walletAddress = phantomWallet.publicKey.toString();
+                            console.log("Connected to Phantom wallet: " + walletAddress);
+
+                            // Kết nối đến Solana mạng
+                            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl(
+                                'mainnet-beta'), 'confirmed');
+                            const walletPublicKey = new solanaWeb3.PublicKey(walletAddress);
+
+                            // Lấy số dư Solana từ ví
+                            const balance = await connection.getBalance(walletPublicKey);
+                            const solBalance = balance / solanaWeb3
+                            .LAMPORTS_PER_SOL; // Chuyển đổi lamports sang SOL
+
+                            balanceSpan.textContent = solBalance.toFixed(2); // Hiển thị số dư
+                            balanceDiv.style.display = 'block'; // Hiển thị phần số dư
+
+                            // Thông báo kết nối ví thành công
+                            document.querySelector('.form-group.mb-4 p').textContent =
+                                "Wallet connected successfully!";
+                            document.querySelector('.form-group.mb-4 a').style.display =
+                            'none'; // Ẩn nút kết nối ví
+                        } catch (error) {
+                            console.error("Error connecting to Phantom wallet: ", error);
+                        }
+                    }
+                } else {
+                    balanceDiv.style.display = 'none'; // Ẩn phần số dư nếu không chọn phương thức thanh toán
+                }
+            });
+        } else {
+            console.log("Phantom wallet is not installed");
+        }
+    </script>
 @endsection

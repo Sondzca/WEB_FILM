@@ -55,8 +55,6 @@ class ClientController extends Controller
     }
 
 
-
-
     public function contact()
     {
         return view('about.contact');
@@ -64,13 +62,5 @@ class ClientController extends Controller
     public function about()
     {
         return view('about.about');
-    }
-    public function detail()
-    {
-        return view('shop.detail');
-    }
-    public function checkout()
-    {
-        return view('carts.checkout');
     }
 }
