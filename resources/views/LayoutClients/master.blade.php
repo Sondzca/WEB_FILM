@@ -126,14 +126,29 @@
                                     </li>
                                     <li>
                                         @php
-                                            // Assuming each user has a cart or you can filter by `user_id`
-                                            $cartCount = \DB::table('cart_items')->sum('quantity');
+                                            $cartCount = 0;
+
+                                            // Check if the user is logged in and has a cart
+                                            if (auth()->check()) {
+                                                $cartId = \DB::table('carts')
+                                                    ->where('user_id', auth()->id())
+                                                    ->value('id');
+
+                                                if ($cartId) {
+                                                    // If a cart exists, sum the quantity from cart_items
+                                                    $cartCount = \DB::table('cart_items')
+                                                        ->where('cart_id', $cartId)
+                                                        ->sum('quantity');
+                                                }
+                                            }
                                         @endphp
-                                        <a href="{{ route('carts.index') }}" class="site-cart">
+                                        <a href="{{ auth()->check() ? route('carts.index') : route('login') }}"
+                                            class="site-cart">
                                             <span class="icon icon-shopping_cart"></span>
                                             <span class="count">{{ $cartCount }}</span>
                                         </a>
                                     </li>
+
                                     <li class="d-inline-block d-md-none ml-md-0"><a href="#"
                                             class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a>
                                     </li>
