@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DiemdanhController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
@@ -83,4 +84,5 @@ Route::controller(UserController::class)->middleware(['auth', 'user'])->group(fu
     Route::resource('user/carts', CartController::class);
     Route::resource('user/wallet', WalletController::class);
     Route::resource('user/orders', OrderController::class);
+    Route::resource('user/diemdanh', DiemdanhController::class);
 });
