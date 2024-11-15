@@ -131,10 +131,10 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <a href="#" class="btn btn-primary btn-lg py-3 btn-block">Proceed To Checkout</a>
+                                    <a href="{{route('orders.index')}}" class="btn btn-primary btn-lg py-3 btn-block">Proceed To Checkout</a>
                                 </div>
                             </div>
-                        </div>
+                        </div>  
                     </div>
                 </div>
             </div>
