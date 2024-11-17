@@ -71,13 +71,13 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#">
-                <span class="menu-title">#</span>
+                <span class="menu-title">Account</span>
                 <i class="mdi mdi-account menu-icon"></i>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#tables">
-                <span class="menu-title">#</span>
+            <a class="nav-link" href="{{route('Adminwallet.index')}}">
+                <span class="menu-title">Ví Thanh toán</span>
                 <i class="mdi mdi-comment menu-icon"></i>
             </a>
         </li>

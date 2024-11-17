@@ -21,6 +21,9 @@
 
     <link rel="stylesheet" href={{ asset('client/css/style.css') }}>
 
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/dist/solana-web3.min.js"></script>
+
+
 </head>
 <style>
     #search-results a.dropdown-item {
