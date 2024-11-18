@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="{{ asset('user/style.css') }}">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/solana-web3.js/1.29.0/solana-web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@2.1.0-canary-20241115192830/dist/solana-web3.min.js"></script>
+    
+
 
 </head>
 

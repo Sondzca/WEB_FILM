@@ -51,6 +51,7 @@ Route::controller(ClientController::class)->group(function () {
     Route::get('clients/about', 'about')->name('about');
     Route::get('ticket/{id}', [TicketController::class, 'show'])->name('ticket.show');
     Route::get('/search-tickets', [TicketController::class, 'searchTickets'])->name('search.tickets');
+    
 });
 
 // Route cho Admin
@@ -85,4 +86,9 @@ Route::controller(UserController::class)->middleware(['auth', 'user'])->group(fu
     Route::resource('user/wallet', WalletController::class);
     Route::resource('user/orders', OrderController::class);
     Route::resource('user/diemdanh', DiemdanhController::class);
+
+    Route::get('/checkout', [OrderController::class, 'index'])->name('checkout');
+    Route::post('/api/solana-payment', [OrderController::class, 'storeTransaction'])->name('solana.payment');
+    
+
 });

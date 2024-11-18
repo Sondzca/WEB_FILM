@@ -20,6 +20,11 @@
     <link rel="stylesheet" href={{ asset('client/css/aos.css') }}>
 
     <link rel="stylesheet" href={{ asset('client/css/style.css') }}>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@2.1.0-canary-20241115192830/dist/solana-web3.min.js"></script>
+
+
+
+
 
 </head>
 <style>
@@ -174,6 +179,9 @@
     <script src={{ asset('client/js/bootstrap.min.js') }}></script>
     <script src={{ asset('client/js/owl.carousel.min.js') }}></script>
     <script src={{ asset('client/js/jquery.magnific-popup.min.js') }}></script>
+    
+
+
     <script src={{ asset('client/js/aos.js') }}></script>
 
     <script src={{ asset('client/js/main.js') }}></script>
