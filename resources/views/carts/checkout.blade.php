@@ -6,70 +6,7 @@
 
 @section('content_client')
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/dist/solana-web3.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (window.solana && window.solana.isPhantom) {
-                const phantomWallet = window.solana;
-                const phantomRadio = document.getElementById('phantom-wallet');
-                const balanceDiv = document.getElementById('phantom-balance');
-                const balanceSpan = document.getElementById('sol-balance');
     
-                phantomRadio.addEventListener('change', async () => {
-                    if (phantomRadio.checked) {
-                        // Kiểm tra ví của người dùng
-                        if (!{{ auth()->user()->wallet ? 'true' : 'false' }}) {
-                            // Nếu ví chưa được kết nối, hỏi người dùng có muốn chuyển hướng đến trang kết nối ví không
-                            const userConfirmed = confirm(
-                                "You have not connected a Phantom Wallet. Would you like to connect your wallet?"
-                            );
-                            if (userConfirmed) {
-                                window.location.href =
-                                "{{ route('wallet.index') }}"; // Chuyển hướng đến trang kết nối ví
-                            } else {
-                                phantomRadio.checked = false; // Hủy chọn "Pay with Phantom Wallet"
-                            }
-                        } else {
-                            try {
-                                // Kết nối ví Phantom
-                                await phantomWallet.connect();
-                                const walletAddress = phantomWallet.publicKey.toString();
-                                console.log("Connected to Phantom wallet: " + walletAddress);
-    
-                                // Kết nối đến Solana mạng
-                                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl(
-                                    'mainnet-beta'), 'confirmed');
-                                const walletPublicKey = new solanaWeb3.PublicKey(walletAddress);
-    
-                                // Lấy số dư Solana từ ví
-                                const balance = await connection.getBalance(walletPublicKey);
-                                const solBalance = balance / solanaWeb3
-                                .LAMPORTS_PER_SOL; // Chuyển đổi lamports sang SOL
-    
-                                // Hiển thị số dư
-                                balanceSpan.textContent = solBalance.toFixed(2);
-                                balanceDiv.style.display = 'block';
-    
-                                // Thông báo kết nối ví thành công
-                                document.querySelector('.form-group.mb-4 p').textContent =
-                                    "Wallet connected successfully!";
-                                document.querySelector('.form-group.mb-4 a').style.display =
-                                'none'; // Ẩn nút kết nối ví
-                            } catch (error) {
-                                console.error("Error connecting to Phantom wallet: ", error);
-                                alert("Failed to connect to Phantom wallet.");
-                            }
-                        }
-                    } else {
-                        balanceDiv.style.display = 'none'; // Ẩn phần số dư nếu không chọn phương thức thanh toán
-                    }
-                });
-            } else {
-                console.error("Phantom Wallet is not installed.");
-            }
-        });
-    </script>
-    
-
     <div class="bg-light py-3">
         <div class="container">
             <div class="row">
@@ -124,16 +61,16 @@
                         </ul>
 
                         <!-- Payment Option: Phantom Wallet -->
-                        @if (auth()->user()->wallet)
+                        @if ($hasWallet)
                             <div class="form-group mb-4">
                                 <label for="phantom-wallet" class="d-flex align-items-center" style="font-size: 1.125rem;">
                                     <input type="radio" id="phantom-wallet" name="payment_method" value="phantom"
                                         style="margin-right: 10px;">
                                     Pay with Phantom Wallet
                                 </label>
-                                <div id="phantom-balance" class="mt-3" style="display: none;">
+                                <div id="phantom-balance" class="mt-3">
                                     <p style="font-size: 1.125rem;">Your Solana balance: <span
-                                            id="sol-balance">Loading...</span> SOL</p>
+                                            id="sol-balance">{{ number_format($walletBalance, 2) }} SOL</span></p>
                                 </div>
                             </div>
                         @else
@@ -141,7 +78,7 @@
                                 <p class="text-danger" style="font-size: 1.125rem;">
                                     Please connect your Phantom Wallet to proceed with this payment option.
                                     <a href="{{ route('wallet.index') }}" class="btn btn-link btn-sm"
-                                        style="font-size: 1.125rem;"
+                                        style="font-size: 1.125rem;" 
                                         onclick="return confirm('chuyển đến trang kết nối ví')">Connect Wallet</a>
                                 </p>
                             </div>
@@ -149,8 +86,8 @@
 
                         <!-- Proceed to Checkout Button -->
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary btn-lg py-3 btn-block"
-                                style="font-size: 1.25rem;">Proceed To Checkout</button>
+                            <a href="{{route('orders.store')}}" type="submit" id="phantom-wallet" class="btn btn-primary btn-lg py-3 btn-block"
+                                style="font-size: 1.25rem;">Proceed To Checkout</a>
                         </div>
                     </div>
                 </div>
@@ -158,4 +95,14 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // JavaScript để kiểm tra trạng thái ví và hiển thị cảnh báo
+        document.querySelector('#phantom-wallet').addEventListener('click', function() {
+            @if (!$hasWallet)
+                confirm('You need to connect your Phantom Wallet to proceed.');
+                window.location.href = "{{ route('wallet.index') }}";
+            @endif
+        });
+    </script>
 @endsection

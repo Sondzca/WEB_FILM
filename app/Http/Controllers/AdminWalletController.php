@@ -5,19 +5,78 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class AdminWalletController extends Controller
 {
+
+    public function getTransactionHistory($walletAddress)
+    {
+        try {
+            // Solscan API endpoint
+            $url = "https://public-api.solscan.io/account/transactions?account=$walletAddress";
+
+            // Gửi request đến Solscan API để lấy lịch sử giao dịch
+            $response = Http::get($url);
+            $data = $response->json();
+
+            // Kiểm tra dữ liệu trả về và lấy 5 giao dịch gần nhất
+            if (isset($data['data']) && count($data['data']) > 0) {
+                $transactions = array_slice($data['data'], 0, 5);  // Lấy 5 giao dịch gần nhất
+                return $transactions;
+            } else {
+                return [];  // Không có giao dịch
+            }
+        } catch (\Exception $e) {
+            return 'Có lỗi khi lấy lịch sử giao dịch: ' . $e->getMessage();
+        }
+    }
+    public function getWalletBalance($walletAddress)
+    {
+        try {
+            // Địa chỉ RPC của Solana Mainnet
+            $rpcEndpoint = "https://api.mainnet-beta.solana.com";
+
+            // Payload yêu cầu lấy số dư
+            $payload = [
+                "jsonrpc" => "2.0",
+                "id" => 1,
+                "method" => "getBalance",
+                "params" => [$walletAddress] // Địa chỉ ví Phantom
+            ];
+
+            // Gửi request đến Solana RPC để lấy số dư
+            $response = Http::post($rpcEndpoint, $payload);
+            $data = $response->json();
+
+            // Kiểm tra kết quả và chuyển đổi từ Lamport sang SOL
+            if (isset($data['result']['value'])) {
+                $balanceLamport = $data['result']['value'];
+                $balanceSOL = $balanceLamport / 1000000000; // Chuyển Lamport sang SOL
+                return number_format($balanceSOL, 2); // Trả về số dư SOL
+            } else {
+                return 'Không thể lấy số dư ví.';
+            }
+        } catch (\Exception $e) {
+            return 'Có lỗi khi kết nối đến Solana RPC API: ' . $e->getMessage();
+        }
+    }
     public function index()
     {
-        $wallet = Auth::user()->wallet;
+        $walletAddress = Auth::user()->wallet;
 
-        return view('wallet.adminWallet', compact('wallet'));
+        if ($walletAddress) {
+            // Gọi phương thức getWalletBalance để lấy số dư ví
+            $balance = $this->getWalletBalance($walletAddress);
+    
+            // Gọi phương thức lấy lịch sử giao dịch
+            $transactions = $this->getTransactionHistory($walletAddress);
+        } else {
+            $balance = null;
+            $transactions = [];
+        }
+        return view('wallet.adminWallet', compact('walletAddress', 'balance'));
     }
-
-
-    public function create() {}
-
 
     public function store(Request $request)
     {
@@ -33,48 +92,26 @@ class AdminWalletController extends Controller
         $user->wallet = $request->wallet;
         $user->save();
 
-        return redirect()->route('wallet.index')->with('status', 'Wallet address saved successfully.');
+        return back()->with('success', 'Wallet address saved successfully.');
     }
 
-
-    public function show($id)
+    public function destroy($userId)
     {
-        //
-    }
-
-
-    public function edit($id)
-    {
-        //
-    }
-
-    public function update(Request $request, $id)
-    {
-        /**
+         /**
          * @var User $user
          */
-        // Lấy thông tin người dùng hiện tại
-        $user = auth()->user();
+        $user = Auth::user();
 
-        // Kiểm tra xem ví có tồn tại
-        if ($user->wallet) {
-            // Xóa địa chỉ ví trong cơ sở dữ liệu
+        if ($user->id == $userId) {
+            // Xóa địa chỉ ví khỏi cơ sở dữ liệu
             $user->wallet = null;
             $user->save();
 
-            // Xử lý các thay đổi trong session hoặc localStorage
-            $request->session()->flash('message', 'Wallet disconnected successfully.');
-            return redirect()->route('wallet.index');  // Redirect về trang ví hoặc trang nào đó
+            // Quay lại trang trước đó và hiển thị thông báo thành công
+            return redirect()->back()->with('success', 'Wallet disconnected successfully.');
         }
 
-        // Nếu không có ví, hiển thị thông báo lỗi
-        $request->session()->flash('error', 'No wallet connected.');
-        return redirect()->route('wallet.index');
-    }
-
-
-    public function destroy($id)
-    {
-        //
+        // Trả về thông báo lỗi nếu hành động không được ủy quyền
+        return redirect()->back()->with('error', 'Unauthorized action.');
     }
 }

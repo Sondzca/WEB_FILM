@@ -5,20 +5,54 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class WalletController extends Controller
 {
+    public function getWalletBalance($walletAddress)
+    {
+        try {
+            // Địa chỉ RPC của Solana Mainnet
+            $rpcEndpoint = "https://api.mainnet-beta.solana.com";
+
+            // Payload yêu cầu lấy số dư
+            $payload = [
+                "jsonrpc" => "2.0",
+                "id" => 1,
+                "method" => "getBalance",
+                "params" => [$walletAddress] // Địa chỉ ví Phantom
+            ];
+
+            // Gửi request đến Solana RPC để lấy số dư
+            $response = Http::post($rpcEndpoint, $payload);
+            $data = $response->json();
+
+            // Kiểm tra kết quả và chuyển đổi từ Lamport sang SOL
+            if (isset($data['result']['value'])) {
+                $balanceLamport = $data['result']['value'];
+                $balanceSOL = $balanceLamport / 1000000000; // Chuyển Lamport sang SOL
+                return number_format($balanceSOL, 2); // Trả về số dư SOL
+            } else {
+                return 'Không thể lấy số dư ví.';
+            }
+        } catch (\Exception $e) {
+            return 'Có lỗi khi kết nối đến Solana RPC API: ' . $e->getMessage();
+        }
+    }
 
     public function index()
     {
-        $wallet = Auth::user()->wallet;
 
-        return view('wallet.wallet', compact('wallet'));
+        $walletAddress = Auth::user()->wallet;
+        if ($walletAddress) {
+            $balance = $this->getWalletBalance($walletAddress);
+        } else {
+            $balance = null;
+        }
+
+        // Trả về view và gửi dữ liệu ví cùng với số dư
+        return view('wallet.wallet', compact('walletAddress', 'balance'));
     }
-
-
-    public function create() {}
-
 
     public function store(Request $request)
     {
@@ -26,7 +60,6 @@ class WalletController extends Controller
             'wallet' => 'required|string|unique:users,wallet',
         ]);
 
-        // Lưu địa chỉ ví vào bảng users
         /**
          * @var User $user
          */
@@ -34,62 +67,26 @@ class WalletController extends Controller
         $user->wallet = $request->wallet;
         $user->save();
 
-        return redirect()->route('wallet.index')->with('status', 'Wallet address saved successfully.');
+        return back()->with('success', 'Wallet address saved successfully.');
     }
-
-
-    public function show($id)
-    {
-        //
-    }
-
-
-    public function edit($id)
-    {
-        //
-    }
-
-    public function update(Request $request, $id)
-    {
-        /**
-         * @var User $user
-         */
-        // Lấy thông tin người dùng hiện tại
-        $user = auth()->user();
-
-        // Kiểm tra xem ví có tồn tại
-        if ($user->wallet) {
-            // Xóa địa chỉ ví trong cơ sở dữ liệu
-            $user->wallet = null;
-            $user->save();
-
-            // Xử lý các thay đổi trong session hoặc localStorage
-            $request->session()->flash('message', 'Wallet disconnected successfully.');
-            return redirect()->route('wallet.index');  // Redirect về trang ví hoặc trang nào đó
-        }
-
-        // Nếu không có ví, hiển thị thông báo lỗi
-        $request->session()->flash('error', 'No wallet connected.');
-        return redirect()->route('wallet.index');
-    }
-
 
     public function destroy($userId)
     {
         /**
          * @var User $user
          */
-        // Kiểm tra xem người dùng hiện tại có phải là người sở hữu ví này không
         $user = Auth::user();
 
         if ($user->id == $userId) {
-            // Xóa địa chỉ ví khỏi bảng users
-            $user->wallet = null; // Giả sử bạn lưu ví trong trường `wallet`
+            // Xóa địa chỉ ví khỏi cơ sở dữ liệu
+            $user->wallet = null;
             $user->save();
 
+            // Quay lại trang trước đó và hiển thị thông báo thành công
             return redirect()->back()->with('success', 'Wallet disconnected successfully.');
         }
 
+        // Trả về thông báo lỗi nếu hành động không được ủy quyền
         return redirect()->back()->with('error', 'Unauthorized action.');
     }
 }
