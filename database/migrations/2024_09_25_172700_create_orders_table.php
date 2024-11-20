@@ -21,7 +21,8 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained();
             $table->unsignedInteger('quantity');
             $table->decimal('total_amount', 10, 2);
-            $table->tinyInteger('status')->default(0);//0: Đang chờ xử lí, 1: Đã xử lí/ đang chuẩn bị sản phẩm, 2: Đang vận chuyển, 3: Giao hàng thành công, 4: Đơn hàng đã bị hủy, 5: Đơn hàng đã được trả lại bởi người dung
+            $table->tinyInteger('status')->default(0); // 1.chờ thanh toán, 2.thành công, 3. thất bại/đã hủy
+            $table->string('message')->nullable();
             $table->timestamps();
         });
     }

@@ -14,6 +14,7 @@ class Order extends Model
         'quantity',
         'total_amount',
         'status',
+        'message'
     ];
 
     public function ticket()

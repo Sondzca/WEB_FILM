@@ -74,8 +74,22 @@ class WalletController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy($userId)
     {
-        //
+        /**
+         * @var User $user
+         */
+        // Kiểm tra xem người dùng hiện tại có phải là người sở hữu ví này không
+        $user = Auth::user();
+
+        if ($user->id == $userId) {
+            // Xóa địa chỉ ví khỏi bảng users
+            $user->wallet = null; // Giả sử bạn lưu ví trong trường `wallet`
+            $user->save();
+
+            return redirect()->back()->with('success', 'Wallet disconnected successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Unauthorized action.');
     }
 }
