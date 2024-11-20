@@ -48,7 +48,8 @@
                         <ul>
                             @foreach($transactions as $transaction)
                                 <li>
-                                    <strong>Tx Hash:</strong> <a href="https://solscan.io/tx/{{ $transaction['txHash'] }}" target="_blank">{{ $transaction['txHash'] }}</a>
+                                    <strong>Tx Hash:</strong> 
+                                    <a href="https://solscan.io/tx/{{ $transaction['txHash'] }}" target="_blank">{{ $transaction['txHash'] }}</a>
                                     <br>
                                     <strong>Amount:</strong> {{ $transaction['lamports'] / 1000000000 }} SOL
                                     <br>
@@ -60,6 +61,7 @@
                         <p>Không có giao dịch gần đây.</p>
                     @endif
                 </div>
+                
             </div>
         @endif
     </div>

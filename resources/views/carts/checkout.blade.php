@@ -100,7 +100,7 @@
         // JavaScript để kiểm tra trạng thái ví và hiển thị cảnh báo
         document.querySelector('#phantom-wallet').addEventListener('click', function() {
             @if (!$hasWallet)
-                confirm('You need to connect your Phantom Wallet to proceed.');
+                alert('Bạn cần kết nối ví mới có thể thanh toán, vui lòng nhấn vào nút kết nối ví để chuyển hướng');
                 window.location.href = "{{ route('wallet.index') }}";
             @endif
         });

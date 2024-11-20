@@ -15,22 +15,25 @@ class AdminWalletController extends Controller
         try {
             // Solscan API endpoint
             $url = "https://public-api.solscan.io/account/transactions?account=$walletAddress";
-
+    
             // Gửi request đến Solscan API để lấy lịch sử giao dịch
             $response = Http::get($url);
             $data = $response->json();
-
+    
             // Kiểm tra dữ liệu trả về và lấy 5 giao dịch gần nhất
             if (isset($data['data']) && count($data['data']) > 0) {
                 $transactions = array_slice($data['data'], 0, 5);  // Lấy 5 giao dịch gần nhất
-                return $transactions;
             } else {
-                return [];  // Không có giao dịch
+                $transactions = [];  // Không có giao dịch, trả về mảng trống
             }
         } catch (\Exception $e) {
-            return 'Có lỗi khi lấy lịch sử giao dịch: ' . $e->getMessage();
+            // Nếu có lỗi, trả về mảng trống thay vì chuỗi lỗi
+            $transactions = [];
         }
+    
+        return $transactions;
     }
+    
     public function getWalletBalance($walletAddress)
     {
         try {
@@ -62,21 +65,23 @@ class AdminWalletController extends Controller
         }
     }
     public function index()
-    {
-        $walletAddress = Auth::user()->wallet;
+{
+    $walletAddress = Auth::user()->wallet;
 
-        if ($walletAddress) {
-            // Gọi phương thức getWalletBalance để lấy số dư ví
-            $balance = $this->getWalletBalance($walletAddress);
-    
-            // Gọi phương thức lấy lịch sử giao dịch
-            $transactions = $this->getTransactionHistory($walletAddress);
-        } else {
-            $balance = null;
-            $transactions = [];
-        }
-        return view('wallet.adminWallet', compact('walletAddress', 'balance'));
+    if ($walletAddress) {
+        // Gọi phương thức getWalletBalance để lấy số dư ví
+        $balance = $this->getWalletBalance($walletAddress);
+
+        // Gọi phương thức lấy lịch sử giao dịch
+        $transactions = $this->getTransactionHistory($walletAddress);
+    } else {
+        $balance = null;
+        $transactions = [];
     }
+    
+    return view('wallet.adminWallet', compact('walletAddress', 'balance', 'transactions')); // Đảm bảo truyền transactions vào view
+}
+
 
     public function store(Request $request)
     {
