@@ -12,7 +12,114 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/solana-web3.js/1.29.0/solana-web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@2.1.0-canary-20241115192830/dist/solana-web3.min.js"></script>
-    
+    <style>
+        /* Đặt màu sắc chung và font chữ */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Styling cho menu */
+.menu-container {
+    width: 250px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-container .nav-profile-text {
+    margin-bottom: 20px;
+}
+
+.menu-container img.img-profile {
+    border: 2px solid #6c757d;
+}
+
+.menu-container ul.menu {
+    margin: 0;
+    padding: 0;
+}
+
+.menu-container ul.menu li {
+    margin: 10px 0;
+}
+
+.menu-container ul.menu a {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+.menu-container ul.menu a:hover {
+    background-color: #e9ecef;
+    color: #007bff;
+}
+
+.menu-container .dropdown-content {
+    padding-left: 20px;
+}
+
+.menu-container .dropdown-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    color: #495057;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.menu-container .dropdown-btn:hover {
+    background-color: #e9ecef;
+}
+
+.menu-container .dropdown-content li a {
+    font-size: 14px;
+}
+
+/* Styling cho content */
+.content-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Nút đăng xuất */
+.menu-container .btn.badge {
+    font-size: 14px;
+    padding: 5px 10px;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+    .d-flex {
+        flex-direction: column;
+    }
+
+    .menu-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .content-container {
+        margin-left: 0;
+    }
+}
+
+    </style>
 
 
 </head>
