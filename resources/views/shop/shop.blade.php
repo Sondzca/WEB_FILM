@@ -87,7 +87,7 @@
                                         <h3> <a href="{{ route('ticket.show', $ticket->id) }}">
                                                 {{ $ticket->name }}</a></h3>
                                         <p class="ticket-price" style="color: red">
-                                            {{ number_format($ticket->price, 0, ',', '.') }} VNĐ</p>
+                                            {{ number_format($ticket->price, 0, ',', '.') }} USD</p>
                                     </div>
                                 </div>
                             </div>

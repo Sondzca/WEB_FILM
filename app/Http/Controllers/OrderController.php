@@ -46,6 +46,14 @@ class OrderController extends Controller
     }
     public function index()
     {
+        $adminWallet = User::where('role', 2)->first()->wallet_address;
+
+        // Kiểm tra xem ví có tồn tại không
+        if (!$adminWallet) {
+            // Nếu không có ví, có thể thông báo lỗi hoặc sử dụng giá trị mặc định
+            $adminWallet = 'Default wallet address';
+        }
+
         $user = auth()->user(); // Get the currently authenticated user
 
         // Retrieve the user's cart
@@ -70,93 +78,45 @@ class OrderController extends Controller
         }
 
         // Pass the user, cart items, total price, and wallet status to the view
-        return view('carts.checkout', compact('user', 'cartItems', 'totalPrice', 'hasWallet', 'walletBalance'));
+        return view('carts.checkout', compact('user' ,'adminWallet', 'cartItems', 'totalPrice', 'hasWallet', 'walletBalance'));
     }
 
     public function store(Request $request)
-    {
-        $user = Auth::user(); 
-        if (!$user->wallet) {
-            return back()->with('error', 'Vui lòng kết nối ví Phantom trước khi thanh toán.');
-        }
+{
+    try {
+        $userPublicKey = $request->input('userPublicKey');
+        $cartItems = $request->input('cartItems'); // Chi tiết các mặt hàng trong giỏ hàng
+        $totalAmount = $request->input('totalAmount');
+        $adminWallet = $request->input('adminWallet');
+        $transactionHash = $request->input('transactionHash'); // Nhận transaction hash từ frontend
 
-        $cart = Cart::where('user_id', $user->id)->first();
-
-        if (!$cart) {
-            return back()->with('error', 'Giỏ hàng của bạn hiện không có sản phẩm.');
-        }
-
-        // Lấy tất cả các item trong giỏ hàng
-        $cartItems = CartItem::where('cart_id', $cart->id)->with('ticket_id')->get();
-        
-        // Tính tổng số lượng và tổng tiền của các sản phẩm trong giỏ hàng
-        $totalQuantity = $cartItems->sum('quantity');
-        $totalAmount = $cartItems->sum('total');
-
-        // Kiểm tra số dư Solana của người dùng
-        $solBalance = $this->getSolanaBalance($user->wallet);
-        
-        if ($solBalance < $totalAmount) {
-            return back()->route('carts.index')->with('error', 'Số dư Solana không đủ để thanh toán.');
-        }
-
-        // Tiến hành thanh toán: trừ số dư Solana của người dùng và cộng vào ví của admin
-        $this->processPayment($user, $totalAmount);
-
-        // Tạo đơn hàng mới
+        // Lưu thông tin đơn hàng vào bảng orders
         $order = Order::create([
-            'user_id' => $user->id,
-            'quantity' => $totalQuantity,
+            'user_id' => auth()->user()->id,
+            'transaction_hash' => $transactionHash,
+            'quantity' => collect($cartItems)->sum('quantity'), // Tính tổng số lượng sản phẩm
             'total_amount' => $totalAmount,
-            'status' => 1, // Chờ thanh toán
-            'message' => 'Đơn hàng chờ thanh toán.',
+            'status' => 1, // Giả sử đơn hàng đang chờ thanh toán
         ]);
 
-        // Thêm các chi tiết đơn hàng vào bảng order_details
+        // Lưu thông tin chi tiết đơn hàng vào bảng order_details
         foreach ($cartItems as $item) {
             OrderDetail::create([
                 'order_id' => $order->id,
-                'ticket_id' => $item->ticket_id,
-                'quantity' => $item->quantity,
-                'price' => $item->price,
-                'total' => $item->total,
+                'ticket_id' => $item['ticket_id'], // Id của vé
+                'quantity' => $item['quantity'],
+                'price' => $item['price'], // Giá của vé
+                'total' => $item['total'], // Tổng giá của sản phẩm
             ]);
-
-            // Cập nhật số lượng sản phẩm trong bảng tickets
-            $ticket = $item->ticket;
-            $ticket->decrement('quantity', $item->quantity);
-            $ticket->increment('sell_quantity', $item->quantity);
         }
 
-        // Xóa các sản phẩm trong giỏ hàng
-        CartItem::where('cart_id', $cart->id)->delete();
+        return redirect()->route('carts.index')->with('success', 'Thành công');
 
-        return back()->route('carts.index')->with('success', 'Đơn hàng đã được tạo thành công!');
+    } catch (\Exception $e) {
+        return back()->with('erorr', 'thất bại: ' . $e->getMessage());
     }
+}
 
-    protected function getSolanaBalance($walletAddress)
-    {
-        // Logic để lấy số dư Solana từ địa chỉ ví (Phantom Wallet)
-        // Đây là ví dụ đơn giản, bạn sẽ cần tích hợp với API Solana để lấy số dư thực tế
-        return 10; // Trả về số dư giả sử
-    }
+    
 
-    protected function processPayment($user, $totalAmount)
-    {
-        // Trừ số dư Solana của người dùng và chuyển vào ví của admin
-        // Cập nhật số dư Solana của người dùng
-        $this->updateWalletBalance($user->wallet, -$totalAmount);
-
-        // Lấy thông tin ví của admin
-        $admin = User::where('role', 2)->first();
-        if ($admin) {
-            $this->updateWalletBalance($admin->wallet, $totalAmount);
-        }
-    }
-
-    protected function updateWalletBalance($walletAddress, $amount)
-    {
-        // Logic để cập nhật số dư ví trong database
-        // Đây là ví dụ đơn giản, bạn sẽ cần tích hợp với API Solana để cập nhật số dư thực tế
-    }
 }

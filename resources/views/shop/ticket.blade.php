@@ -21,7 +21,7 @@
                         Thời gian: {{ \Carbon\Carbon::parse($ticket->startday)->format('d/m/Y H:i') }} -
                         {{ \Carbon\Carbon::parse($ticket->enday)->format('d/m/Y H:i') }}
                     </p>
-                    <p class="ticket-price" style="color: red">{{ number_format($ticket->price, 0, ',', '.') }} VNĐ</p>
+                    <p class="ticket-price" style="color: red">{{ number_format($ticket->price, 0, ',', '.') }} USD</p>
                     <p>Category: {{ $ticket->category->name }}</p>
 
                     <!-- Thêm vào giỏ hàng -->

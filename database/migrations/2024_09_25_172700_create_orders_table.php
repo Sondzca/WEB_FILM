@@ -18,6 +18,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->string('transaction_hash')->unique();
             $table->foreignIdFor(User::class)->constrained();
             $table->unsignedInteger('quantity');
             $table->decimal('total_amount', 10, 2);
