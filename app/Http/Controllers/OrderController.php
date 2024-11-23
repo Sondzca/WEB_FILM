@@ -97,22 +97,22 @@ class OrderController extends Controller
     {
         try {
             $user = auth()->user();
-    
+
             if (!$user) {
-                return back()->with('error', 'Vui lòng đăng nhập để thực hiện hành động này.');
+                return redirect()->route('carts.index')->with('error', 'Vui lòng đăng nhập để thực hiện hành động này.');
             }
-    
+
             $userPublicKey = $request->input('userPublicKey');
             $cartItems = $request->input('cartItems');
             $totalAmount = $request->input('totalAmount');
             $adminWallet = $request->input('adminWallet');
             $transactionHash = $request->input('transactionHash');
-    
+
             // Kiểm tra dữ liệu đầu vào
             if (empty($userPublicKey) || empty($cartItems) || empty($totalAmount) || empty($transactionHash)) {
-                return back()->with('error', 'Thông tin đơn hàng không đầy đủ.');
+                return redirect()->route('carts.index')->with('error', 'Thông tin đơn hàng không đầy đủ.');
             }
-    
+
             // Lưu thông tin đơn hàng vào bảng orders
             $order = Order::create([
                 'user_id' => $user->id,
@@ -121,7 +121,7 @@ class OrderController extends Controller
                 'total_amount' => $totalAmount,
                 'status' => 1, // Đơn hàng đang chờ xử lý
             ]);
-    
+
             // Lưu chi tiết đơn hàng
             foreach ($cartItems as $item) {
                 if (isset($item['ticket_id'], $item['quantity'], $item['price'], $item['total'])) {
@@ -136,13 +136,12 @@ class OrderController extends Controller
                     Log::warning('Dữ liệu sản phẩm không hợp lệ: ' . json_encode($item));
                 }
             }
-    
+
             return redirect()->route('carts.index')->with('success', 'Đặt hàng thành công.');
         } catch (\Exception $e) {
             // Log lỗi để kiểm tra
             Log::error("Lỗi trong phương thức store: " . $e->getMessage());
-            return back()->with('error', 'Đã xảy ra lỗi khi lưu đơn hàng: ' . $e->getMessage());
+            return redirect()->route('carts.index')->with('error', 'Đã xảy ra lỗi khi lưu đơn hàng: ' . $e->getMessage());
         }
     }
-    
 }

@@ -100,7 +100,6 @@
         document.querySelector('#proceed-to-checkout').addEventListener('click', async function(e) {
             e.preventDefault();
 
-            // Kiểm tra Phantom Wallet
             if (!window.solana || !window.solana.isPhantom) {
                 alert('Bạn cần cài đặt Phantom Wallet để thanh toán.');
                 return;
@@ -116,9 +115,6 @@
                 const userPublicKey = publicKey.toString();
                 const adminWallet = "{{ $adminWallet }}";
 
-                console.log("User wallet:", userPublicKey);
-                console.log("Admin Wallet:", adminWallet);
-
                 // Xác thực khóa công khai
                 try {
                     const sender = new solanaWeb3.PublicKey(userPublicKey);
@@ -129,7 +125,6 @@
                     return;
                 }
 
-                // Chuyển đổi USD sang SOL (tỷ giá giả định)
                 const totalAmount = @json($totalAmount);
                 const solAmount = totalAmount / 25; // Tỷ giá USD/SOL giả định
 
@@ -138,20 +133,19 @@
                     return;
                 }
 
-                // Tạo kết nối Solana (thử với devnet nếu mainnet-beta gặp lỗi)
-                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'), 'confirmed');
+                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('testnet'), 'confirmed');
+                const balance = await connection.getBalance(new solanaWeb3.PublicKey(userPublicKey));
+                if (balance < solanaWeb3.LAMPORTS_PER_SOL * solAmount) {
+                    alert("Không đủ SOL để thực hiện giao dịch.");
+                    return;
+                }
 
-                // Lấy recentBlockhash
                 const {
                     blockhash
                 } = await connection.getLatestBlockhash();
-                console.log("Recent Blockhash:", blockhash);
-
-                // Tạo giao dịch
                 const transaction = new solanaWeb3.Transaction({
                     recentBlockhash: blockhash,
-                    feePayer: new solanaWeb3.PublicKey(
-                    userPublicKey), // Đặt phí thanh toán cho người gửi
+                    feePayer: new solanaWeb3.PublicKey(userPublicKey),
                 });
 
                 const transferInstruction = solanaWeb3.SystemProgram.transfer({
@@ -162,7 +156,6 @@
 
                 transaction.add(transferInstruction);
 
-                // Ký và gửi giao dịch
                 const signedTransaction = await provider.signTransaction(transaction);
                 const txId = await connection.sendRawTransaction(signedTransaction.serialize(), {
                     skipPreflight: false,
@@ -172,7 +165,7 @@
                 await connection.confirmTransaction(txId, 'confirmed');
 
                 // Gửi transaction hash đến backend
-                const response = await fetch("{{ route('orders.store') }}", {
+                const response = await fetch("{{ route('orders.store') }}", {   
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -187,13 +180,17 @@
                     }),
                 });
 
-                const result = await response.json();
-
-                if (result.success) {
-                    alert("Thanh toán thành công! Đơn hàng của bạn đã được xử lý.");
-                    window.location.href = "{{ route('orders.index') }}";
+                // Chờ phản hồi từ backend, không cần JSON nếu bạn chuyển hướng từ server
+                if (response.redirected) {
+                    window.location.href = response.url; // Chuyển hướng nếu backend yêu cầu
                 } else {
-                    alert("Thanh toán thất bại, vui lòng thử lại.");
+                    const result = await response.json();
+                    if (result.success) {
+                        alert("Thanh toán thành công! Đơn hàng của bạn đã được xử lý.");
+                        window.location.href = "{{ route('carts.index') }}";
+                    } else {
+                        alert(result.message || "Thanh toán thất bại, vui lòng thử lại.");
+                    }
                 }
             } catch (error) {
                 alert("Có lỗi xảy ra trong quá trình thanh toán.");
