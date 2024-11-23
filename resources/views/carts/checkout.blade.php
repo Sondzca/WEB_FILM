@@ -85,8 +85,8 @@
 
                         <!-- Proceed to Checkout Button -->
                         <div class="form-group">
-                            <a href="#" id="proceed-to-checkout"
-                                class="btn btn-primary btn-lg py-3 btn-block" style="font-size: 1.25rem;">Proceed To
+                            <a href="#" id="proceed-to-checkout" class="btn btn-primary btn-lg py-3 btn-block"
+                                style="font-size: 1.25rem;">Proceed To
                                 Checkout</a>
                         </div>
                     </div>
@@ -97,10 +97,10 @@
     </div>
 
     <script>
-        // JavaScript to check wallet status and process checkout
         document.querySelector('#proceed-to-checkout').addEventListener('click', async function(e) {
-            e.preventDefault(); // Stop the default button action
+            e.preventDefault();
 
+            // Kiểm tra Phantom Wallet
             if (!window.solana || !window.solana.isPhantom) {
                 alert('Bạn cần cài đặt Phantom Wallet để thanh toán.');
                 return;
@@ -109,50 +109,69 @@
             const provider = window.solana;
 
             try {
-                // Connect with Phantom Wallet
-                const { publicKey } = await provider.connect();
+                // Kết nối Phantom Wallet
+                const {
+                    publicKey
+                } = await provider.connect();
                 const userPublicKey = publicKey.toString();
-                const adminWallet = "{{ $adminWallet }}"; // Admin wallet address
-                const totalAmount = @json($totalAmount); // Total amount to be paid in USD
+                const adminWallet = "{{ $adminWallet }}";
 
-                // Convert totalAmount to SOL (replace this conversion logic as needed)
-                const solAmount = totalAmount; // For simplicity, assume 1 USD = 1 SOL for now
+                console.log("User wallet:", userPublicKey);
+                console.log("Admin Wallet:", adminWallet);
 
-                // Create Solana connection
-                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
+                // Xác thực khóa công khai
+                try {
+                    const sender = new solanaWeb3.PublicKey(userPublicKey);
+                    const recipient = new solanaWeb3.PublicKey(adminWallet);
+                } catch (e) {
+                    alert("Public key không hợp lệ. Vui lòng kiểm tra lại.");
+                    console.error(e);
+                    return;
+                }
 
-                // Create transaction
-                const transaction = new solanaWeb3.Transaction();
+                // Chuyển đổi USD sang SOL (tỷ giá giả định)
+                const totalAmount = @json($totalAmount);
+                const solAmount = totalAmount / 25; // Tỷ giá USD/SOL giả định
 
-                // Admin wallet address (recipient)
-                const recipient = new solanaWeb3.PublicKey(adminWallet);
+                if (solAmount <= 0) {
+                    alert("Tổng tiền thanh toán không hợp lệ.");
+                    return;
+                }
 
-                // User's public key (sender)
-                const sender = new solanaWeb3.PublicKey(userPublicKey);
+                // Tạo kết nối Solana (thử với devnet nếu mainnet-beta gặp lỗi)
+                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'), 'confirmed');
 
-                // Create transfer instruction
-                const transferInstruction = solanaWeb3.SystemProgram.transfer({
-                    fromPubkey: sender,
-                    toPubkey: recipient,
-                    lamports: solanaWeb3.LAMPORTS_PER_SOL * solAmount, // Convert SOL to lamports
+                // Lấy recentBlockhash
+                const {
+                    blockhash
+                } = await connection.getLatestBlockhash();
+                console.log("Recent Blockhash:", blockhash);
+
+                // Tạo giao dịch
+                const transaction = new solanaWeb3.Transaction({
+                    recentBlockhash: blockhash,
+                    feePayer: new solanaWeb3.PublicKey(
+                    userPublicKey), // Đặt phí thanh toán cho người gửi
                 });
 
-                // Add instruction to transaction
+                const transferInstruction = solanaWeb3.SystemProgram.transfer({
+                    fromPubkey: new solanaWeb3.PublicKey(userPublicKey),
+                    toPubkey: new solanaWeb3.PublicKey(adminWallet),
+                    lamports: solanaWeb3.LAMPORTS_PER_SOL * solAmount,
+                });
+
                 transaction.add(transferInstruction);
 
-                // Sign transaction with Phantom Wallet
+                // Ký và gửi giao dịch
                 const signedTransaction = await provider.signTransaction(transaction);
-
-                // Send transaction
                 const txId = await connection.sendRawTransaction(signedTransaction.serialize(), {
                     skipPreflight: false,
-                    preflightCommitment: 'confirmed'
+                    preflightCommitment: 'confirmed',
                 });
 
-                // Wait for transaction confirmation
                 await connection.confirmTransaction(txId, 'confirmed');
 
-                // Send transaction hash to the backend
+                // Gửi transaction hash đến backend
                 const response = await fetch("{{ route('orders.store') }}", {
                     method: 'POST',
                     headers: {
@@ -162,9 +181,9 @@
                     body: JSON.stringify({
                         userPublicKey: userPublicKey,
                         cartItems: @json($cartItems),
-                        totalAmount: @json($totalAmount),
+                        totalAmount: totalAmount,
                         adminWallet: adminWallet,
-                        transactionHash: txId, // Send transaction hash to backend
+                        transactionHash: txId,
                     }),
                 });
 
