@@ -46,4 +46,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Cart::class);  // Một người dùng chỉ có một giỏ hàng
     }
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }
