@@ -23,8 +23,8 @@ class OrderController extends Controller
                 return 'Địa chỉ ví không hợp lệ.';
             }
 
-            // Địa chỉ RPC của Solana Mainnet
-            $rpcEndpoint = "https://api.mainnet-beta.solana.com";
+            // Chuyển sang devnet để test
+            $rpcEndpoint = "https://api.devnet.solana.com";
 
             // Payload yêu cầu lấy số dư
             $payload = [
@@ -34,27 +34,134 @@ class OrderController extends Controller
                 "params" => [$walletAddress]
             ];
 
-            // Gửi request đến Solana RPC để lấy số dư
+            // Gửi request đến Solana Devnet
             $response = Http::post($rpcEndpoint, $payload);
 
             if ($response->successful()) {
                 $data = $response->json();
 
-                // Kiểm tra kết quả và chuyển đổi từ Lamport sang SOL
                 if (isset($data['result']['value'])) {
                     $balanceLamport = $data['result']['value'];
                     $balanceSOL = $balanceLamport / 1000000000; // Chuyển Lamport sang SOL
-                    return number_format($balanceSOL, 2); // Trả về số dư SOL
-                } else {
-                    return 'Không thể lấy số dư từ RPC.';
+
+                    // Thêm airdrop SOL test nếu số dư bằng 0
+                    if ($balanceSOL == 0) {
+                        $this->requestAirdrop($walletAddress);
+                        // Đợi một chút để airdrop được xác nhận
+                        sleep(2);
+                        // Lấy lại số dư mới
+                        $response = Http::post($rpcEndpoint, $payload);
+                        if ($response->successful()) {
+                            $data = $response->json();
+                            $balanceLamport = $data['result']['value'] ?? 0;
+                            $balanceSOL = $balanceLamport / 1000000000;
+                        }
+                    }
+
+                    return [
+                        'status' => 'success',
+                        'balance' => number_format($balanceSOL, 2),
+                        'network' => 'devnet'
+                    ];
                 }
-            } else {
-                return 'Lỗi kết nối đến Solana RPC.';
+
+                return [
+                    'status' => 'error',
+                    'message' => 'Không thể lấy số dư từ RPC.',
+                    'network' => 'devnet'
+                ];
             }
+
+            return [
+                'status' => 'error',
+                'message' => 'Lỗi kết nối đến Solana Devnet.',
+                'network' => 'devnet'
+            ];
         } catch (\Exception $e) {
-            // Log lỗi để theo dõi
-            Log::error("Lỗi khi lấy số dư ví: " . $e->getMessage());
-            return 'Có lỗi xảy ra khi kết nối đến RPC: ' . $e->getMessage();
+            Log::error("Lỗi khi lấy số dư ví devnet: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage(),
+                'network' => 'devnet'
+            ];
+        }
+    }
+
+    // Thêm function để request airdrop SOL test
+    private function requestAirdrop($walletAddress)
+    {
+        try {
+            $rpcEndpoint = "https://api.devnet.solana.com";
+
+            // Request 1 SOL (1 billion lamports)
+            $payload = [
+                "jsonrpc" => "2.0",
+                "id" => 1,
+                "method" => "requestAirdrop",
+                "params" => [
+                    $walletAddress,
+                    1000000000 // 1 SOL in lamports
+                ]
+            ];
+
+            $response = Http::post($rpcEndpoint, $payload);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (isset($data['result'])) {
+                    // Signature của transaction airdrop
+                    $signature = $data['result'];
+
+                    // Đợi transaction được confirm
+                    $this->confirmTransaction($signature);
+
+                    Log::info("Airdrop thành công cho ví: " . $walletAddress);
+                    return true;
+                }
+            }
+
+            Log::error("Không thể thực hiện airdrop");
+            return false;
+        } catch (\Exception $e) {
+            Log::error("Lỗi khi thực hiện airdrop: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Thêm function để confirm transaction
+    private function confirmTransaction($signature)
+    {
+        try {
+            $rpcEndpoint = "https://api.devnet.solana.com";
+
+            $payload = [
+                "jsonrpc" => "2.0",
+                "id" => 1,
+                "method" => "confirmTransaction",
+                "params" => [$signature]
+            ];
+
+            $maxRetries = 10;
+            $retryCount = 0;
+
+            while ($retryCount < $maxRetries) {
+                $response = Http::post($rpcEndpoint, $payload);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    if (isset($data['result']['value']) && $data['result']['value']) {
+                        return true;
+                    }
+                }
+
+                $retryCount++;
+                sleep(1);
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            Log::error("Lỗi khi confirm transaction: " . $e->getMessage());
+            return false;
         }
     }
 

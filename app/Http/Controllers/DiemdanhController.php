@@ -4,48 +4,90 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Attendance;
 
 class DiemdanhController extends Controller
 {
     public function index()
     {
-        // Get current date and day of the week
         $user = auth()->user();
         $today = Carbon::today();
-        $dayOfWeek = $today->dayOfWeek; // Get today's day number (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        $dayOfWeek = $today->dayOfWeek;
 
-        // Determine if the user can mark attendance today
-        $canMarkAttendance = $dayOfWeek >= Carbon::parse($today)->dayOfWeek; // You can only mark attendance for today or future days
+        // Kiểm tra xem đã điểm danh hôm nay chưa
+        $hasAttendedToday = Attendance::where('user_id', $user->id)
+            ->whereDate('date', $today)
+            ->exists();
 
-        return view('diemdanh.index', compact('user', 'dayOfWeek', 'canMarkAttendance'));
+        // Chỉ cho phép điểm danh trong ngày hiện tại
+        $canMarkAttendance = !$hasAttendedToday;
+
+        // Lấy thông tin điểm danh trong tuần này
+        $weeklyAttendance = Attendance::where('user_id', $user->id)
+            ->whereBetween('date', [
+                Carbon::now()->startOfWeek(),
+                Carbon::now()->endOfWeek()
+            ])
+            ->get();
+
+        return view('diemdanh.index', compact(
+            'user',
+            'dayOfWeek',
+            'canMarkAttendance',
+            'weeklyAttendance'
+        ));
     }
 
     public function store(Request $request)
     {
         $user = auth()->user();
-        $today = Carbon::today();
-        $dayOfWeek = $today->dayOfWeek;
+        $now = Carbon::now();
 
-        // Prevent attendance for past days
-        if ($dayOfWeek > $today->dayOfWeek) {
-            return redirect()->route('diemdanh.index')->with('error', 'You cannot mark attendance for past days.');
+        // Kiểm tra xem đã điểm danh hôm nay chưa
+        if (Attendance::where('user_id', $user->id)
+            ->whereDate('date', $now->toDateString())
+            ->exists()
+        ) {
+            return redirect()
+                ->route('diemdanh.index')
+                ->with('error', 'Bạn đã điểm danh hôm nay rồi.');
         }
 
-        // Calculate points for today (10 points for weekdays, 20 for Sunday)
-        $points = ($dayOfWeek == 0) ? 20 : 10; // 20 points for Sunday, 10 points for other days
+        // Tính điểm dựa vào ngày trong tuần
+        $points = ($now->dayOfWeek === Carbon::SUNDAY) ? 20 : 10;
 
-        // Update user's points
-        $user->increment('point', $points);
+        // Tạo bản ghi điểm danh mới
+        Attendance::create([
+            'user_id' => $user->id,
+            'points' => $points,
+            'date' => $now->toDateString()
+        ]);
 
-        // Check if all 7 days of attendance are marked (check if the user has attended each day of the week)
-        $attendanceDays = 7; // Total number of days in the week (from Monday to Sunday)
-        $userPoints = $user->point;
+        // Cập nhật điểm cho user
+        $newPoints = $user->point + $points;
 
-        // If the user has attended every day of the week (7 days), reward with extra 10 points
-        if ($user->attendance()->whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count() == $attendanceDays) {
-            $user->increment('point', 10);
+        // Kiểm tra điểm danh trong tuần
+        $weeklyCount = Attendance::where('user_id', $user->id)
+            ->whereBetween('date', [
+                $now->copy()->startOfWeek(),
+                $now->copy()->endOfWeek()
+            ])
+            ->count();
+
+        if ($weeklyCount === 7) {
+            $newPoints += 10; // Thêm 10 điểm thưởng
+            $message = 'Điểm danh thành công! Bạn được thưởng thêm 10 điểm vì đã điểm danh đủ 7 ngày!';
+        } else {
+            $message = 'Điểm danh thành công!';
         }
 
-        return redirect()->route('diemdanh.index')->with('success', 'Attendance marked successfully.');
+        // Cập nhật tổng điểm của user
+        $user->update([
+            'point' => $newPoints
+        ]);
+
+        return redirect()
+            ->route('diemdanh.index')
+            ->with('success', $message);
     }
 }

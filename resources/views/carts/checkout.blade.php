@@ -28,13 +28,19 @@
                                 <span class="text-black" style="font-size: 1.25rem; font-weight: bold;">Product</span>
                                 <span class="text-black ml-auto" style="font-size: 1.25rem; font-weight: bold;">Total</span>
                             </li>
-
+                
                             <!-- Loop through the cart items -->
-                            @php $totalAmount = 0; @endphp
+                            @php 
+                                $totalAmount = 0; 
+                                try {
+                            @endphp
                             @foreach ($cartItems as $item)
                                 @php
-                                    $itemTotal = $item->quantity * $item->ticket->price; // Calculate the total for this item
-                                    $totalAmount += $itemTotal; // Add the item total to the overall total
+                                    // Ensure we're working with numeric values
+                                    $quantity = is_numeric($item->quantity) ? floatval($item->quantity) : 0;
+                                    $price = is_numeric($item->ticket->price) ? floatval($item->ticket->price) : 0;
+                                    $itemTotal = $quantity * $price;
+                                    $totalAmount += $itemTotal;
                                 @endphp
                                 <li class="d-flex mb-4 align-items-center">
                                     <div class="d-flex align-items-center" style="width: 60%;">
@@ -43,22 +49,29 @@
                                             style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
                                         <span class="text-black"
                                             style="font-size: 1.125rem;">{{ $item->ticket->name }}</span>
-                                        <span class="text-muted ml-3">x{{ $item->quantity }}</span>
+                                        <span class="text-muted ml-3">x{{ $quantity }}</span>
                                     </div>
                                     <span class="text-black ml-auto"
-                                        style="font-size: 1.125rem;">${{ number_format($itemTotal, 2) }}</span>
+                                        style="font-size: 1.125rem;">${{ number_format((float)$itemTotal, 2) }}</span>
                                 </li>
                             @endforeach
-
+                
                             <!-- Total Amount -->
                             <li class="d-flex mb-4">
                                 <span class="text-black" style="font-size: 1.25rem; font-weight: bold;">Total Amount</span>
                                 <span class="text-black ml-auto" style="font-size: 1.25rem; font-weight: bold;">
-                                    ${{ number_format($totalAmount, 2) }}
+                                    ${{ number_format((float)$totalAmount, 2) }}
                                 </span>
                             </li>
+                            @php
+                                } catch (\Exception $e) {
+                                    // Log the error
+                                    \Log::error('Error in checkout calculation: ' . $e->getMessage());
+                                    $totalAmount = 0;
+                                }
+                            @endphp
                         </ul>
-
+                
                         <!-- Payment Option: Phantom Wallet -->
                         @if ($hasWallet)
                             <div class="form-group mb-4">
@@ -69,7 +82,7 @@
                                 </label>
                                 <div id="phantom-balance" class="mt-3">
                                     <p style="font-size: 1.125rem;">Your Solana balance: <span
-                                            id="sol-balance">{{ number_format($walletBalance, 2) }} SOL</span></p>
+                                            id="sol-balance">{{ is_numeric($walletBalance) ? number_format((float)$walletBalance, 2) : '0.00' }} SOL</span></p>
                                 </div>
                             </div>
                         @else
@@ -82,12 +95,11 @@
                                 </p>
                             </div>
                         @endif
-
+                
                         <!-- Proceed to Checkout Button -->
                         <div class="form-group">
                             <a href="#" id="proceed-to-checkout" class="btn btn-primary btn-lg py-3 btn-block"
-                                style="font-size: 1.25rem;">Proceed To
-                                Checkout</a>
+                                style="font-size: 1.25rem;">Proceed To Checkout</a>
                         </div>
                     </div>
                 </div>
@@ -97,105 +109,150 @@
     </div>
 
     <script>
-        document.querySelector('#proceed-to-checkout').addEventListener('click', async function(e) {
-            e.preventDefault();
+       document.querySelector('#proceed-to-checkout').addEventListener('click', async function(e) {
+                e.preventDefault();
 
-            if (!window.solana || !window.solana.isPhantom) {
-                alert('Bạn cần cài đặt Phantom Wallet để thanh toán.');
-                return;
-            }
+                // Check if Phantom is installed
+                if (!window.solana || !window.solana.isPhantom) {
+                    alert('Bạn cần cài đặt Phantom Wallet để thanh toán.');
+                    return;
+                }
 
-            const provider = window.solana;
+                const provider = window.solana;
 
-            try {
-                // Kết nối Phantom Wallet
-                const {
-                    publicKey
-                } = await provider.connect();
-                const userPublicKey = publicKey.toString();
-                const adminWallet = "{{ $adminWallet }}";
-
-                // Xác thực khóa công khai
                 try {
-                    const sender = new solanaWeb3.PublicKey(userPublicKey);
-                    const recipient = new solanaWeb3.PublicKey(adminWallet);
-                } catch (e) {
-                    alert("Public key không hợp lệ. Vui lòng kiểm tra lại.");
-                    console.error(e);
-                    return;
-                }
-
-                const totalAmount = @json($totalAmount);
-                const solAmount = totalAmount / 25; // Tỷ giá USD/SOL giả định
-
-                if (solAmount <= 0) {
-                    alert("Tổng tiền thanh toán không hợp lệ.");
-                    return;
-                }
-
-                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('testnet'), 'confirmed');
-                const balance = await connection.getBalance(new solanaWeb3.PublicKey(userPublicKey));
-                if (balance < solanaWeb3.LAMPORTS_PER_SOL * solAmount) {
-                    alert("Không đủ SOL để thực hiện giao dịch.");
-                    return;
-                }
-
-                const {
-                    blockhash
-                } = await connection.getLatestBlockhash();
-                const transaction = new solanaWeb3.Transaction({
-                    recentBlockhash: blockhash,
-                    feePayer: new solanaWeb3.PublicKey(userPublicKey),
-                });
-
-                const transferInstruction = solanaWeb3.SystemProgram.transfer({
-                    fromPubkey: new solanaWeb3.PublicKey(userPublicKey),
-                    toPubkey: new solanaWeb3.PublicKey(adminWallet),
-                    lamports: solanaWeb3.LAMPORTS_PER_SOL * solAmount,
-                });
-
-                transaction.add(transferInstruction);
-
-                const signedTransaction = await provider.signTransaction(transaction);
-                const txId = await connection.sendRawTransaction(signedTransaction.serialize(), {
-                    skipPreflight: false,
-                    preflightCommitment: 'confirmed',
-                });
-
-                await connection.confirmTransaction(txId, 'confirmed');
-
-                // Gửi transaction hash đến backend
-                const response = await fetch("{{ route('orders.store') }}", {   
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    },
-                    body: JSON.stringify({
-                        userPublicKey: userPublicKey,
-                        cartItems: @json($cartItems),
-                        totalAmount: totalAmount,
-                        adminWallet: adminWallet,
-                        transactionHash: txId,
-                    }),
-                });
-
-                // Chờ phản hồi từ backend, không cần JSON nếu bạn chuyển hướng từ server
-                if (response.redirected) {
-                    window.location.href = response.url; // Chuyển hướng nếu backend yêu cầu
-                } else {
-                    const result = await response.json();
-                    if (result.success) {
-                        alert("Thanh toán thành công! Đơn hàng của bạn đã được xử lý.");
-                        window.location.href = "{{ route('carts.index') }}";
-                    } else {
-                        alert(result.message || "Thanh toán thất bại, vui lòng thử lại.");
+                    // Validate provider connection
+                    let publicKey;
+                    try {
+                        const resp = await provider.connect();
+                        publicKey = resp.publicKey;
+                        if (!publicKey) {
+                            throw new Error('Không thể kết nối với ví Phantom');
+                        }
+                    } catch (connError) {
+                        console.error('Connection error:', connError);
+                        alert('Không thể kết nối với ví Phantom. Vui lòng thử lại.');
+                        return;
                     }
+
+                    const userPublicKey = publicKey.toString();
+                    const adminWallet = "{{ $adminWallet }}";
+
+                    // Validate both public keys
+                    let sender, recipient;
+                    try {
+                        // Check if the keys are in the correct format
+                        if (!userPublicKey || userPublicKey.length !== 44 || !adminWallet || adminWallet.length !== 44) {
+                            throw new Error('Định dạng public key không hợp lệ');
+                        }
+
+                        sender = new solanaWeb3.PublicKey(userPublicKey);
+                        recipient = new solanaWeb3.PublicKey(adminWallet);
+
+                        // Validate that both keys are actually on the Solana network
+                        if (!solanaWeb3.PublicKey.isOnCurve(sender.toBytes())) {
+                            throw new Error('Public key người gửi không hợp lệ');
+                        }
+                        if (!solanaWeb3.PublicKey.isOnCurve(recipient.toBytes())) {
+                            throw new Error('Public key người nhận không hợp lệ');
+                        }
+                    } catch (e) {
+                        console.error('Public key validation error:', e);
+                        alert("Public key không hợp lệ: " + e.message);
+                        return;
+                    }
+
+                    // Calculate amount
+                    const totalAmount = parseFloat(@json($totalAmount));
+                    const solAmount = totalAmount / 25; // Tỷ giá USD/SOL
+
+                    if (isNaN(solAmount) || solAmount <= 0) {
+                        alert("Tổng tiền thanh toán không hợp lệ.");
+                        return;
+                    }
+
+                    // Connect to Solana network and check balance
+                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('testnet'), 'confirmed');
+                    
+                    let balance;
+                    try {
+                        balance = await connection.getBalance(sender);
+                    } catch (balanceError) {
+                        console.error('Balance check error:', balanceError);
+                        alert("Không thể kiểm tra số dư. Vui lòng thử lại.");
+                        return;
+                    }
+
+                    if (balance < solanaWeb3.LAMPORTS_PER_SOL * solAmount) {
+                        alert(`Không đủ SOL để thực hiện giao dịch. Cần: ${solAmount} SOL, Hiện có: ${balance / solanaWeb3.LAMPORTS_PER_SOL} SOL`);
+                        return;
+                    }
+
+                    // Create and send transaction
+                    try {
+                        const { blockhash } = await connection.getLatestBlockhash();
+                        const transaction = new solanaWeb3.Transaction({
+                            recentBlockhash: blockhash,
+                            feePayer: sender
+                        });
+
+                        const transferInstruction = solanaWeb3.SystemProgram.transfer({
+                            fromPubkey: sender,
+                            toPubkey: recipient,
+                            lamports: Math.floor(solanaWeb3.LAMPORTS_PER_SOL * solAmount)
+                        });
+
+                        transaction.add(transferInstruction);
+
+                        const signedTransaction = await provider.signTransaction(transaction);
+                        const txId = await connection.sendRawTransaction(signedTransaction.serialize(), {
+                            skipPreflight: false,
+                            preflightCommitment: 'confirmed'
+                        });
+
+                        // Wait for confirmation
+                        const confirmation = await connection.confirmTransaction(txId, 'confirmed');
+                        if (confirmation.value.err) {
+                            throw new Error('Giao dịch thất bại: ' + confirmation.value.err);
+                        }
+
+                        // Send to backend
+                        const response = await fetch("{{ route('orders.store') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                userPublicKey: userPublicKey,
+                                cartItems: @json($cartItems),
+                                totalAmount: totalAmount,
+                                adminWallet: adminWallet,
+                                transactionHash: txId
+                            })
+                        });
+
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            const result = await response.json();
+                            if (result.success) {
+                                alert("Thanh toán thành công! Đơn hàng của bạn đã được xử lý.");
+                                window.location.href = "{{ route('carts.index') }}";
+                            } else {
+                                throw new Error(result.message || "Thanh toán thất bại");
+                            }
+                        }
+                    } catch (txError) {
+                        console.error('Transaction error:', txError);
+                        alert("Lỗi trong quá trình giao dịch: " + txError.message);
+                        return;
+                    }
+
+                } catch (error) {
+                    console.error("Error during transaction:", error);
+                    alert("Có lỗi xảy ra trong quá trình thanh toán: " + error.message);
                 }
-            } catch (error) {
-                alert("Có lỗi xảy ra trong quá trình thanh toán.");
-                console.error("Error during transaction:", error);
-            }
-        });
+            });
     </script>
 @endsection
