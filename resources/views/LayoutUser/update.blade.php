@@ -5,40 +5,7 @@
 @endsection
 
 @section('content')
-    <style>
-        .referral-container {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-        }
-
-        .referral-container label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .referral-container input {
-            border: 2px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            margin-right: 10px;
-            flex: 1;
-        }
-
-        .referral-container button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .referral-container button:hover {
-            background-color: #45a049;
-        }
-    </style>
+ 
     <h1 class="text-center">Cập nhật tài khoản</h1>
 
     <form action="{{ route('user.update') }}" method="POST" enctype="multipart/form-data">
@@ -86,20 +53,7 @@
         <a href="{{ route('user.dashboard') }}" class="btn btn-secondary mt-3">Quay lai</a>
 
     </form>
-    <div class="referral-container">
-        <label for="referralCode">Mã Giới Thiệu:</label>
-        <input type="text" id="referralCode" value="{{ $user->referral_code }}" readonly>
-        <button onclick="copyReferralCode()">Copy</button>
-    </div>
+    
 
-    <script>
-        function copyReferralCode() {
-            var referralCode = document.getElementById("referralCode");
-            referralCode.select();
-            referralCode.setSelectionRange(0, 99999); 
-            document.execCommand("copy");
-
-            alert("Đã sao chép mã giới thiệu: " + referralCode.value);
-        }
-    </script>
+    
 @endsection

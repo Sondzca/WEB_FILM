@@ -5,6 +5,58 @@
 @endsection
 
 @section('content')
+    <style>
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 1.5rem;
+            /* khoảng cách trên */
+        }
+
+        .referral-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .referral-container label {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .referral-container input {
+            border: 2px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+            flex: 1;
+            font-size: 1.1rem;
+            background-color: #fff;
+        }
+
+        .referral-container button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1rem;
+        }
+
+        .referral-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
     <?php
     use Carbon\Carbon;
     ?>
@@ -51,7 +103,12 @@
             @endforeach
         </div>
 
-        <p class="text-center mt-4">Current Points: {{ $user->point }}</p>
+        <p class="text-center mt-4">Điểm thưởng: {{ $user->point }}</p>
+        <div class="referral-container">
+            <label for="referralCode">Mã Giới Thiệu:</label>
+            <input type="text" id="referralCode" value="{{ $user->referral_code }}" readonly>
+            <button onclick="copyReferralCode()">Copy</button>
+        </div>
     </div>
 
     <style>
@@ -115,4 +172,14 @@
             border-color: #004085;
         }
     </style>
+    <script>
+        function copyReferralCode() {
+            var referralCode = document.getElementById("referralCode");
+            referralCode.select();
+            referralCode.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+
+            alert("Đã sao chép mã giới thiệu: " + referralCode.value);
+        }
+    </script>
 @endsection
