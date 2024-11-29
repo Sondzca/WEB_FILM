@@ -26,14 +26,23 @@ class AccountController extends Controller
         $user = $request->validate([
             'email' => ['required', 'regex:/^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,4}$/', 'unique:users,email'],
             'password' => 'required|string|min:6|confirmed', // Use 'confirmed' for password confirmation
+            'referral_code' => 'nullable|exists:users,referral_code'
         ]);
     
         try {
             $user['password'] = Hash::make($request->input('password'));
             $user['role'] = $request->filled('role') ? $request->input('role') : 0;
-    
+            $user['referral_code'] = Str::random(10); // Tạo mã giới thiệu ngẫu nhiên
+
+
             $user = User::query()->create($user);
-    
+
+            if ($request->referral_code) {
+                $referrer = User::where('referral_code', $request->referral_code)->first();
+                if ($referrer) {
+                    $referrer->increment('point', 200); // Tăng điểm của người giới thiệu
+                }
+            }
             Auth::login($user);
             $request->session()->regenerate();
     
