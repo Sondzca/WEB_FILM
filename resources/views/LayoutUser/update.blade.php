@@ -5,25 +5,63 @@
 @endsection
 
 @section('content')
+    <style>
+        .referral-container {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .referral-container label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .referral-container input {
+            border: 2px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+            flex: 1;
+        }
+
+        .referral-container button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .referral-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
     <h1 class="text-center">Cập nhật tài khoản</h1>
 
     <form action="{{ route('user.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <label for="fullname">Full Name</label>
-        <input type="text" class="form-control mb-3" name="fullname" id="fullname" value="{{ old('fullname', Auth::user()->fullname) }}">
+        <input type="text" class="form-control mb-3" name="fullname" id="fullname"
+            value="{{ old('fullname', Auth::user()->fullname) }}">
 
         <label for="birth_day">Birth Day</label>
-        <input type="date" class="form-control mb-3" name="birth_day" id="birth_day" value="{{ old('birth_day', Auth::user()->birth_day) }}">
+        <input type="date" class="form-control mb-3" name="birth_day" id="birth_day"
+            value="{{ old('birth_day', Auth::user()->birth_day) }}">
 
         <label for="phone">Phone</label>
-        <input type="text" class="form-control mb-3" name="phone" id="phone" value="{{ old('phone', Auth::user()->phone) }}">
+        <input type="text" class="form-control mb-3" name="phone" id="phone"
+            value="{{ old('phone', Auth::user()->phone) }}">
 
         <label for="email">Email</label>
-        <input type="email" class="form-control mb-3" name="email" id="email" value="{{ old('email', Auth::user()->email) }}">
+        <input type="email" class="form-control mb-3" name="email" id="email"
+            value="{{ old('email', Auth::user()->email) }}">
 
         <div class="d-flex">
-            @if(!empty(Auth::user()->email))
-                @if(Auth::user()->email_verified_at == null)
+            @if (!empty(Auth::user()->email))
+                @if (Auth::user()->email_verified_at == null)
                     <span>Trạng thái:</span>
                     <p style="color: red" class="ms-3">Chưa xác thực</p>
                     <div class="">
@@ -35,16 +73,33 @@
                 @endif
             @endif
         </div>
-        
+
         <label for="address">Address</label>
-        <input type="text" class="form-control mb-3" name="address" id="address" value="{{ old('address', Auth::user()->address) }}">
-        
+        <input type="text" class="form-control mb-3" name="address" id="address"
+            value="{{ old('address', Auth::user()->address) }}">
+
         <label for="avatar" class="mt-3">Avatar</label>
         <img src="{{ asset('storage/' . Auth::user()->avatar) }}" width="100px" class="ms-3 mt-3">
         <input type="file" class="form-control mb-3 mt-3" name="avatar" id="avatar">
 
         <button type="submit" class="btn btn-success mt-3">Cập nhật</button>
-        <a href="{{route('user.dashboard')}}" class="btn btn-secondary mt-3">Quay lai</a>
-        
+        <a href="{{ route('user.dashboard') }}" class="btn btn-secondary mt-3">Quay lai</a>
+
     </form>
+    <div class="referral-container">
+        <label for="referralCode">Mã Giới Thiệu:</label>
+        <input type="text" id="referralCode" value="{{ $user->referral_code }}" readonly>
+        <button onclick="copyReferralCode()">Copy</button>
+    </div>
+
+    <script>
+        function copyReferralCode() {
+            var referralCode = document.getElementById("referralCode");
+            referralCode.select();
+            referralCode.setSelectionRange(0, 99999); 
+            document.execCommand("copy");
+
+            alert("Đã sao chép mã giới thiệu: " + referralCode.value);
+        }
+    </script>
 @endsection
