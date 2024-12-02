@@ -49,11 +49,32 @@
                             @foreach($transactions as $transaction)
                                 <li>
                                     <strong>Tx Hash:</strong> 
-                                    <a href="https://solscan.io/tx/{{ $transaction['txHash'] }}" target="_blank">{{ $transaction['txHash'] }}</a>
+                                    <a href="https://solscan.io/tx/{{ $transaction['transactionHash'] }}" target="_blank">
+                                        {{ $transaction['transactionHash'] }}
+                                    </a>
                                     <br>
-                                    <strong>Amount:</strong> {{ $transaction['lamports'] / 1000000000 }} SOL
+                                    <strong>Sender:</strong> {{ $transaction['sender'] ?? 'Unknown' }}
                                     <br>
-                                    <strong>Date:</strong> {{ \Carbon\Carbon::parse($transaction['blockTime'])->toDateTimeString() }}
+                                    <strong>Receivers:</strong> 
+                                    @if(isset($transaction['receivers']) && count($transaction['receivers']) > 0)
+                                        {{ implode(', ', $transaction['receivers']) }}
+                                    @else
+                                        Unknown
+                                    @endif
+                                    <br>
+                                    <strong>Amount:</strong> 
+                                    @if(isset($transaction['lamports']))
+                                        {{ number_format($transaction['lamports'] / 1000000000, 9) }} SOL
+                                    @else
+                                        N/A
+                                    @endif
+                                    <br>
+                                    <strong>Date:</strong> 
+                                    @if(isset($transaction['blockTime']))
+                                        {{ \Carbon\Carbon::parse($transaction['blockTime'])->toDateTimeString() }}
+                                    @else
+                                        N/A
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>

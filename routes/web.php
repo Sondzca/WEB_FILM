@@ -7,6 +7,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DiemdanhController;
+use App\Http\Controllers\ManagerUserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
@@ -68,6 +69,8 @@ Route::controller(AdminController::class)->middleware(['auth', 'AdminOrManager']
     Route::resource('admin/Adminwallet', AdminWalletController::class);
     Route::resource('admin/categories', CategoryController::class);
     Route::resource('admin/tickets', TicketController::class);
+    Route::resource('managers', ManagerUserController::class)
+        ->middleware(['auth', 'admin']);
 });
 
 

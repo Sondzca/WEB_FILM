@@ -5,34 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class AdminWalletController extends Controller
 {
-
-    public function getTransactionHistory($walletAddress)
-    {
-        try {
-            // Solscan API endpoint
-            $url = "https://public-api.solscan.io/account/transactions?account=$walletAddress";
-
-            // Gửi request đến Solscan API để lấy lịch sử giao dịch
-            $response = Http::get($url);
-            $data = $response->json();
-
-            // Kiểm tra dữ liệu trả về và lấy 5 giao dịch gần nhất
-            if (isset($data['data']) && count($data['data']) > 0) {
-                $transactions = array_slice($data['data'], 0, 5);  // Lấy 5 giao dịch gần nhất
-            } else {
-                $transactions = [];  // Không có giao dịch, trả về mảng trống
-            }
-        } catch (\Exception $e) {
-            // Nếu có lỗi, trả về mảng trống thay vì chuỗi lỗi
-            $transactions = [];
-        }
-
-        return $transactions;
-    }
 
     public function getWalletBalance($walletAddress)
     {
@@ -64,6 +41,52 @@ class AdminWalletController extends Controller
             return 'Có lỗi khi kết nối đến Solana RPC API: ' . $e->getMessage();
         }
     }
+
+
+    public function getTransactionDetailsDevnet($transactionHash)
+    {
+        try {
+            $rpcEndpoint = "https://api.devnet.solana.com"; // RPC endpoint cho devnet
+
+            $payload = [
+                "jsonrpc" => "2.0",
+                "id" => 1,
+                "method" => "getTransaction",
+                "params" => [$transactionHash, "json"] // "json" để lấy thông tin chi tiết
+            ];
+
+            // Gửi yêu cầu tới RPC
+            $response = Http::post($rpcEndpoint, $payload);
+            $data = $response->json();
+
+            if (isset($data['result'])) {
+                $transaction = $data['result'];
+
+                // Lấy thông tin người gửi (signer) và danh sách người nhận
+                $sender = $transaction['transaction']['message']['accountKeys'][0] ?? null;
+                $receivers = [];
+                foreach ($transaction['meta']['postTokenBalances'] ?? [] as $balance) {
+                    $receivers[] = $balance['owner'];
+                }
+
+                return [
+                    'sender' => $sender,
+                    'receivers' => $receivers,
+                ];
+            } else {
+                return [
+                    'error' => 'Không tìm thấy thông tin giao dịch.',
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                'error' => 'Lỗi khi kết nối RPC: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+
+
     public function index()
     {
         $walletAddress = Auth::user()->wallet;
@@ -72,15 +95,29 @@ class AdminWalletController extends Controller
             // Gọi phương thức getWalletBalance để lấy số dư ví
             $balance = $this->getWalletBalance($walletAddress);
 
-            // Gọi phương thức lấy lịch sử giao dịch
-            $transactions = $this->getTransactionHistory($walletAddress);
+            // Lấy địa chỉ ví từ bảng users
+            $walletAddress = Auth::user()->wallet;
+
+            // Query bảng orders với user_id từ Auth
+            $orders = DB::table('orders')
+                ->where('user_id', Auth::id()) // Lọc theo user_id
+                ->orderBy('created_at', 'desc') // Lấy giao dịch mới nhất trước
+                ->get(['transaction_hash']);
+
+
+            $transactions = [];
+            foreach ($orders as $order) {
+                $details = $this->getTransactionDetailsDevnet($order->transaction_hash);
+                $transactions[] = $details;
+            }
         } else {
             $balance = null;
             $transactions = [];
         }
 
-        return view('wallet.adminWallet', compact('walletAddress', 'balance', 'transactions')); // Đảm bảo truyền transactions vào view
+        return view('wallet.adminWallet', compact('walletAddress', 'balance', 'transactions'));
     }
+
 
 
     public function store(Request $request)
