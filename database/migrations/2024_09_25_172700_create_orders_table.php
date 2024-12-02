@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained();
             $table->unsignedInteger('quantity');
             $table->decimal('total_amount', 10, 2);
-            $table->tinyInteger('status')->default(0); // 1.chờ thanh toán, 2.thành công, 3. thất bại/đã hủy
+            $table->tinyInteger('status')->default(0); // 0.chờ thanh toán, 1.thành công, 2. thất bại/đã hủy
             $table->string('message')->nullable();
             $table->timestamps();
         });

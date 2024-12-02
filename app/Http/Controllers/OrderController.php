@@ -227,7 +227,7 @@ class OrderController extends Controller
                 'transaction_hash' => $transactionHash,
                 'quantity' => collect($cartItems)->sum('quantity'),
                 'total_amount' => $totalAmount,
-                'status' => 1, // Đơn hàng đang chờ xử lý
+                'status' => 1, // Đơn hàng hoàn thành
             ]);
 
             // Lưu chi tiết đơn hàng

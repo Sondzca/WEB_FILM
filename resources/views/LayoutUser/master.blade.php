@@ -39,13 +39,12 @@
                     <ul class="dropdown-content list-unstyled ps-3" style="display: block;"> <!-- Đặt display: block -->
                         <li><a href="{{route('user.edit')}}">Hồ Sơ</a></li>
                         <li><a href="{{route('user.changepass.form')}}">Đổi Mật Khẩu</a></li>
-                        <li><a href="#">Cài Đặt Thông Báo</a></li>
                     </ul>
                 </li>
                 <li><a href="{{route('wallet.index')}}" class="btn btn-light w-100 text-start">Kết nối ví</a></li>
                 <li><a href="" class="btn btn-light w-100 text-start">Đơn Mua</a></li>
                 <li><a href="{{route('diemdanh.index')}}" class="btn btn-light w-100 text-start">Điểm danh</a></li>
-                <li><a href="#" class="btn btn-light w-100 text-start">Thông Báo</a></li>
+                <li><a href="#" class="btn btn-light w-100 text-start">Vé của tôi</a></li>
                 <li>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf

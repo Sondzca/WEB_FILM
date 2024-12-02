@@ -1,10 +1,10 @@
-@extends('LayoutUser.master')
+@extends('LayoutAdmin.master')
 
 @section('title')
     Connect Wallet
 @endsection
 
-@section('content')
+@section('content_admin')
     <div class="container">
         <h2 class="text-center">Connect Phantom Wallet</h2>
         <p>Đây là tài khoản thanh toán</p>
