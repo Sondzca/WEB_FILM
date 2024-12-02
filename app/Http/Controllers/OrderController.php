@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Solana\RpcClient\PublicKey;
@@ -220,7 +221,7 @@ class OrderController extends Controller
                 return redirect()->route('carts.index')->with('error', 'Thông tin đơn hàng không đầy đủ.');
             }
 
-            // Lưu thông tin đơn hàng vào bảng orders
+            // Tạo bản ghi order
             $order = Order::create([
                 'user_id' => $user->id,
                 'transaction_hash' => $transactionHash,
@@ -239,9 +240,24 @@ class OrderController extends Controller
                         'price' => $item['price'],
                         'total' => $item['total'],
                     ]);
+
+                    // Cập nhật số lượng trong bảng tickets
+                    $ticket = Ticket::find($item['ticket_id']);
+                    if ($ticket) {
+                        $ticket->decrement('quantity', $item['quantity']); // Giảm số lượng tồn kho
+                        $ticket->increment('sell_quantity', $item['quantity']); // Tăng số lượng đã bán
+                    } else {
+                        Log::warning('Không tìm thấy ticket với ID: ' . $item['ticket_id']);
+                    }
                 } else {
                     Log::warning('Dữ liệu sản phẩm không hợp lệ: ' . json_encode($item));
                 }
+            }
+
+            // Xóa giỏ hàng sau khi đặt hàng thành công
+            $cart = Cart::where('user_id', $user->id)->first();
+            if ($cart) {
+                CartItem::where('cart_id', $cart->id)->delete();
             }
 
             return redirect()->route('carts.index')->with('success', 'Đặt hàng thành công.');

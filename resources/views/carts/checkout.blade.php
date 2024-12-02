@@ -164,7 +164,7 @@
 
                     // Calculate amount
                     const totalAmount = parseFloat(@json($totalAmount));
-                    const solAmount = totalAmount / 25; // Tỷ giá USD/SOL
+                    const solAmount = totalAmount / 250; // Tỷ giá USD/SOL
 
                     if (isNaN(solAmount) || solAmount <= 0) {
                         alert("Tổng tiền thanh toán không hợp lệ.");
