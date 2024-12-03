@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminWalletController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DiemdanhController;
 use App\Http\Controllers\ManagerUserController;
@@ -13,8 +14,6 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +25,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 
 // Route cho Account
 Route::controller(AccountController::class)->group(function () {
@@ -56,38 +54,42 @@ Route::controller(ClientController::class)->group(function () {
 });
 
 // Route cho Admin
-Route::controller(AdminController::class)->middleware(['auth', 'AdminOrManager'])->group(function () {
-    Route::get('admin/dashboard',  'index')->name('admin.dashboard');
-    // Đổi mật khẩu
-    Route::get('/admin/change-password', 'changepass')->name('admin.changepass.form');
-    Route::post('/admin/change-password', 'changepass_')->name('admin.password.change');
-    // Cập nhật tài khoản
-    Route::get('/admin/edit', 'edit')->name('admin.edit');
-    Route::post('/admin/update', 'update')->name('admin.update');
+Route::controller(AdminController::class)
+    ->middleware(['auth', 'AdminOrManager'])
+    ->group(function () {
+        Route::get('admin/dashboard', 'index')->name('admin.dashboard');
+        // Đổi mật khẩu
+        Route::get('/admin/change-password', 'changepass')->name('admin.changepass.form');
+        Route::post('/admin/change-password', 'changepass_')->name('admin.password.change');
+        // Cập nhật tài khoản
+        Route::get('/admin/edit', 'edit')->name('admin.edit');
+        Route::post('/admin/update', 'update')->name('admin.update');
 
-    //route chức năng
-    Route::resource('admin/Adminwallet', AdminWalletController::class);
-    Route::resource('admin/categories', CategoryController::class);
-    Route::resource('admin/tickets', TicketController::class);
-    Route::resource('managers', ManagerUserController::class)
-        ->middleware(['auth', 'admin']);
-});
+        //route chức năng
+        Route::resource('admin/Adminwallet', AdminWalletController::class);
+        Route::resource('admin/categories', CategoryController::class);
+        Route::resource('admin/tickets', TicketController::class);
+        Route::resource('managers', ManagerUserController::class)->middleware(['auth', 'admin']);
 
+        Route::get('/charts', [ChartController::class, 'getChartData'])->name('charts');
+    });
 
 // Route cho User
-Route::controller(UserController::class)->middleware(['auth', 'user'])->group(function () {
-    Route::get('user/dashboard', 'user')->name('user.dashboard');
+Route::controller(UserController::class)
+    ->middleware(['auth', 'user'])
+    ->group(function () {
+        Route::get('user/dashboard', 'user')->name('user.dashboard');
 
-    Route::get('user/change-password', 'changepass')->name('user.changepass.form');
-    Route::post('user/change-password', 'changepass_')->name('user.password.change');
+        Route::get('user/change-password', 'changepass')->name('user.changepass.form');
+        Route::post('user/change-password', 'changepass_')->name('user.password.change');
 
-    Route::get('user/edit', 'edit')->name('user.edit');
-    Route::post('user/update', 'update')->name('user.update');
+        Route::get('user/edit', 'edit')->name('user.edit');
+        Route::post('user/update', 'update')->name('user.update');
 
-    //route chuc nang 
-    Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
-    Route::resource('user/carts', CartController::class);
-    Route::resource('user/wallet', WalletController::class);
-    Route::resource('user/orders', OrderController::class);
-    Route::resource('user/diemdanh', DiemdanhController::class);
-});
+        //route chuc nang
+        Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
+        Route::resource('user/carts', CartController::class);
+        Route::resource('user/wallet', WalletController::class);
+        Route::resource('user/orders', OrderController::class);
+        Route::resource('user/diemdanh', DiemdanhController::class);
+    });
