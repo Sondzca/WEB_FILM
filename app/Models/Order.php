@@ -17,11 +17,13 @@ class Order extends Model
         'message',
         'transaction_hash'
     ];
-
-    public function ticket()
+    // Mối quan hệ nhiều-nhiều với Ticket
+    public function tickets()
     {
-        return $this->belongsTo(Ticket::class);
+        return $this->belongsToMany(Ticket::class, 'order_ticket', 'order_id', 'ticket_id');
     }
+
+    // Mối quan hệ một-nhiều với OrderDetail
     public function orderDetails()
     {
         return $this->hasMany(OrderDetail::class);
