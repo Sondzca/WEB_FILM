@@ -139,11 +139,14 @@
                     const adminWallet = "{{ $adminWallet }}";
 
                     // Validate both public keys
+
+                    console.log(userPublicKey)
+                    console.log(adminWallet)
                     let sender, recipient;
                     try {
                         // Check if the keys are in the correct format
-                        if (!userPublicKey || userPublicKey.length !== 44 || !adminWallet || adminWallet.length !== 44) {
-                            throw new Error('Định dạng public key không hợp lệ');
+                        if (!userPublicKey || !adminWallet ) {
+                            throw new Error(' Địa chỉ không tồn tại');
                         }
 
                         sender = new solanaWeb3.PublicKey(userPublicKey);
