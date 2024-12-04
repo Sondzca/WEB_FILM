@@ -9,21 +9,24 @@ use App\Models\Attendance;
 class DiemdanhController extends Controller
 {
     public function index()
-    {
-        // Lấy người dùng hiện tại
-        $user = auth()->user();
-        
-        // Lấy ngày hôm nay và các thông tin cần thiết
-        $today = Carbon::today();
-        $attendanceDays = 7; // Tổng số ngày trong tuần (từ thứ 2 đến Chủ Nhật)
-    
-        // Kiểm tra xem người dùng đã điểm danh đủ 7 ngày trong tuần chưa
-        $attendanceCount = $user->attendances()->whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
-        $userPoints = $user->point;
-    
-        // Truyền dữ liệu cho View
-        return view('diemdanh.index', compact('user', 'attendanceCount', 'userPoints', 'today'));
-    }
+{
+    // Lấy người dùng hiện tại và làm mới dữ liệu từ cơ sở dữ liệu
+    $user = auth()->user()->fresh();
+
+    // Lấy ngày hôm nay và các thông tin cần thiết
+    $today = Carbon::today();
+    $attendanceDays = 7; // Tổng số ngày trong tuần (từ thứ 2 đến Chủ Nhật)
+
+    // Kiểm tra số lần điểm danh trong tuần
+    $attendanceCount = $user->attendances()
+        ->whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+        ->count();
+
+    $userPoints = $user->point; // Cập nhật điểm từ cơ sở dữ liệu
+
+    // Truyền dữ liệu cho view
+    return view('diemdanh.index', compact('user', 'attendanceCount', 'userPoints', 'today'));
+}
     
 
     /**
@@ -112,4 +115,35 @@ class DiemdanhController extends Controller
 
         return redirect()->route('diemdanh.index')->with('success', 'Điểm danh bù thành công.');
     }
+
+public function exchangePoints(Request $request)
+{
+    // Lấy thông tin người dùng hiện tại
+    $user = auth()->user();
+
+    // Kiểm tra xem người dùng có đủ 10,000 điểm để đổi thưởng
+    $exchangeRate = 10000; // Tỉ lệ đổi điểm: 10,000 điểm = 1 USD
+    if ($user->point < $exchangeRate) {
+        return redirect()->route('diemdanh.index')->with('error', 'Bạn cần tối thiểu 10,000 điểm để đổi thưởng.');
+    }
+
+    // Tính toán số USD có thể đổi và số điểm còn lại
+    $usdAmount = floor($user->point / $exchangeRate); // Số USD đổi được
+    $pointsToDeduct = $usdAmount * $exchangeRate;     // Tổng điểm cần trừ
+    $remainingPoints = $user->point - $pointsToDeduct; // Điểm còn lại
+
+    // Cập nhật điểm và lưu vào cơ sở dữ liệu
+    $user->update([
+        'point' => $remainingPoints,
+        'exchanged_points' => ($user->exchanged_points ?? 0) + $pointsToDeduct,
+    ]);
+
+    // Trả về thông báo thành công
+    return redirect()->route('diemdanh.index')->with(
+        'success',
+        "Bạn đã đổi thành công {$usdAmount} USD. Điểm còn lại của bạn là {$remainingPoints}."
+    );
+}
+
+    
 }

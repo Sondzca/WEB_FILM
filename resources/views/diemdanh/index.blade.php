@@ -55,10 +55,17 @@
                 </div>
             @endforeach
         </div>
-
+        
         <!-- Hiển thị tổng điểm -->
         <p class="text-center mt-4">Điểm thưởng của bạn: {{ $userPoints }}</p>
-
+        @if ($userPoints >= 10000)
+            <form action="{{ route('diemdanh.exchange') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-success">Đổi 10,000 điểm thành 1 USD</button>
+            </form>
+        @else
+            <p class="text-muted">Bạn cần tối thiểu 10,000 điểm để đổi thưởng.</p>
+        @endif
         <!-- Hiển thị lịch sử điểm danh -->
         <h3 class="mt-5 text-center">Lịch sử điểm danh</h3>
         <table class="table table-bordered">
@@ -209,80 +216,80 @@
                 font-size: 12px;
             }
         }
+
         /* Container của mã giới thiệu */
-.referral-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 10px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+        .referral-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-/* Label của mã giới thiệu */
-.referral-container label {
-    font-weight: bold;
-    color: #333;
-    margin-right: 10px;
-}
+        /* Label của mã giới thiệu */
+        .referral-container label {
+            font-weight: bold;
+            color: #333;
+            margin-right: 10px;
+        }
 
-/* Ô input */
-.referral-container input[type="text"] {
-    padding: 8px 12px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 250px;
-    background-color: #fff;
-    color: #555;
-    outline: none;
-    transition: all 0.3s ease-in-out;
-}
+        /* Ô input */
+        .referral-container input[type="text"] {
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 250px;
+            background-color: #fff;
+            color: #555;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
 
-.referral-container input[type="text"]:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
+        .referral-container input[type="text"]:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
 
-/* Nút Copy */
-.referral-container button {
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
+        /* Nút Copy */
+        .referral-container button {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
 
-.referral-container button:hover {
-    background-color: #0056b3;
-    box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.3);
-}
+        .referral-container button:hover {
+            background-color: #0056b3;
+            box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.3);
+        }
 
-/* Responsive cho màn hình nhỏ */
-@media (max-width: 768px) {
-    .referral-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
+        /* Responsive cho màn hình nhỏ */
+        @media (max-width: 768px) {
+            .referral-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
 
-    .referral-container input[type="text"] {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+            .referral-container input[type="text"] {
+                width: 100%;
+                margin-bottom: 10px;
+            }
 
-    .referral-container button {
-        width: 100%;
-    }
-}
-
+            .referral-container button {
+                width: 100%;
+            }
+        }
     </style>
     <script>
         function copyReferralCode() {

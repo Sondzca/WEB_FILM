@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('js/chart.js') }}"></script>
 
-    
+
 
     <title>@yield('title')</title>
 </head>
@@ -67,6 +67,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script src="{{ url('js/chart.umd.js') }}"></script>
     <script src="{{ url('js/dashboard.js') }}"></script>
