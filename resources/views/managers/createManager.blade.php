@@ -24,6 +24,8 @@
             <label>Xác Nhận Mật Khẩu</label>
             <input type="password" class="form-control" name="password_confirmation" required>
         </div>
+
+        <input type="text" class="form-control" name="role" value="1" hidden>
         
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Thêm Quản lý</button>
