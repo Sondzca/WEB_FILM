@@ -84,6 +84,9 @@
                                 </li>
                             @endforeach
                         </ul>
+                        <div class="pagination">
+                            {{ $orders->links() }}
+                        </div>
                     @else
                         <p>Không có giao dịch gần đây.</p>
                     @endif

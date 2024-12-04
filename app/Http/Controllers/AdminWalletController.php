@@ -125,8 +125,9 @@ class AdminWalletController extends Controller
 
             // Query bảng orders với user_id từ Auth
             $orders = DB::table('orders')
-                ->orderBy('created_at', 'desc') // Sắp xếp theo thời gian tạo (có thể thay đổi tùy theo yêu cầu)
-                ->get(['transaction_hash']); // Lấy cột transaction_hash của tất cả các giao dịch
+                ->whereNotNull('transaction_hash')  // Chỉ lấy các đơn hàng có transaction_hash không null
+                ->orderBy('created_at', 'desc')    // Sắp xếp theo thời gian tạo giảm dần
+                ->paginate(5); // Lấy cột transaction_hash của tất cả các giao dịch
 
             $transactions = [];
             foreach ($orders as $order) {
@@ -138,7 +139,7 @@ class AdminWalletController extends Controller
             $transactions = [];
         }
 
-        return view('wallet.adminWallet', compact('walletAddress', 'balance', 'transactions'));
+        return view('wallet.adminWallet', compact('walletAddress', 'balance', 'transactions', 'orders'));
     }
 
 
