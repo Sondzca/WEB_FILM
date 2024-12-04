@@ -13,6 +13,7 @@ use App\Http\Controllers\ManagerUserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VecuabanController;
 use App\Http\Controllers\WalletController;
@@ -76,6 +77,9 @@ Route::controller(AdminController::class)
         Route::resource('managers', ManagerUserController::class)->middleware(['auth', 'admin']);
 
         Route::get('/charts', [ChartController::class, 'getChartData'])->name('charts');
+
+        Route::get('/transaction', [TransactionController::class, 'index']);
+        Route::post('/transaction', [TransactionController::class, 'return']);
     });
 
 // Route cho User

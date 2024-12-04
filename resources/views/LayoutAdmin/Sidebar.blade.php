@@ -82,8 +82,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span class="menu-title">#</span>
+            <a class="nav-link" href="/transaction">
+                <span class="menu-title">Tra cứu giao dịch</span>
                 <i class="mdi mdi-format-size menu-icon"></i>
             </a>
         </li>

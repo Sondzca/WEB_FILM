@@ -46,7 +46,7 @@ class AdminWalletController extends Controller
     public function getTransactionDetailsDevnet($transactionHash)
     {
         try {
-            $rpcEndpoint = "https://api.devnet.solana.com"; // RPC endpoint cho devnet
+            $rpcEndpoint = "https://api.testnet.solana.com"; // RPC endpoint cho devnet
 
             $payload = [
                 "jsonrpc" => "2.0",
@@ -62,16 +62,39 @@ class AdminWalletController extends Controller
             if (isset($data['result'])) {
                 $transaction = $data['result'];
 
-                // Lấy thông tin người gửi (signer) và danh sách người nhận
+                // Lấy thông tin người gửi (signer)
                 $sender = $transaction['transaction']['message']['accountKeys'][0] ?? null;
+
+                // Lấy thông tin người nhận (receivers)
                 $receivers = [];
-                foreach ($transaction['meta']['postTokenBalances'] ?? [] as $balance) {
-                    $receivers[] = $balance['owner'];
+
+                // Kiểm tra nếu có thông tin về các chủ sở hữu token
+                if (isset($transaction['meta']['postTokenBalances'])) {
+                    foreach ($transaction['meta']['postTokenBalances'] as $balance) {
+                        $receivers[] = $balance['owner'];  // Thêm người nhận token vào mảng
+                    }
                 }
 
+                // Kiểm tra nếu có thông tin về người nhận SOL
+                if (isset($transaction['meta']['postBalances'])) {
+                    // Lấy người nhận SOL, sẽ là accountKey tiếp theo trong list accountKeys
+                    $receivers[] = $transaction['transaction']['message']['accountKeys'][1] ?? null;
+                }
+
+                // Chuyển đổi lamports thành SOL
+                $lamports = $transaction['meta']['postBalances'][0] ?? null;
+                $solAmount = $lamports / 1000000000; // 1 SOL = 1,000,000,000 lamports
+
+                // Lấy thông tin thời gian giao dịch
+                $blockTime = $transaction['blockTime'] ?? null;
+
                 return [
+                    'transactionHash' => $transactionHash,
                     'sender' => $sender,
                     'receivers' => $receivers,
+                    'lamports' => $lamports,
+                    'solAmount' => $solAmount,
+                    'blockTime' => $blockTime ? date('Y-m-d H:i:s', $blockTime) : null,
                 ];
             } else {
                 return [
@@ -84,6 +107,8 @@ class AdminWalletController extends Controller
             ];
         }
     }
+
+
 
 
 
@@ -100,10 +125,8 @@ class AdminWalletController extends Controller
 
             // Query bảng orders với user_id từ Auth
             $orders = DB::table('orders')
-                ->where('user_id', Auth::id()) // Lọc theo user_id
-                ->orderBy('created_at', 'desc') // Lấy giao dịch mới nhất trước
-                ->get(['transaction_hash']);
-
+                ->orderBy('created_at', 'desc') // Sắp xếp theo thời gian tạo (có thể thay đổi tùy theo yêu cầu)
+                ->get(['transaction_hash']); // Lấy cột transaction_hash của tất cả các giao dịch
 
             $transactions = [];
             foreach ($orders as $order) {
@@ -117,6 +140,7 @@ class AdminWalletController extends Controller
 
         return view('wallet.adminWallet', compact('walletAddress', 'balance', 'transactions'));
     }
+
 
 
 

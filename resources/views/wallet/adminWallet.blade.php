@@ -10,7 +10,7 @@
         <p>Đây là tài khoản thanh toán</p>
 
         <!-- Thông báo khi chưa kết nối ví -->
-        @if(is_null(Auth::user()->wallet))
+        @if (is_null(Auth::user()->wallet))
             <div class="text-center mt-3" style="color: red; font-size: 18px;">
                 Bạn chưa kết nối ví, vui lòng kết nối để có thể thanh toán.
             </div>
@@ -23,7 +23,8 @@
                     Wallet Address: {{ Auth::user()->wallet }}
                 </p>
 
-                <form action="{{ route('Adminwallet.destroy', Auth::user()->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn ngắt kết nối ví không?')">
+                <form action="{{ route('Adminwallet.destroy', Auth::user()->id) }}" method="POST"
+                    onsubmit="return confirm('Bạn có chắc muốn ngắt kết nối ví không?')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm">Disconnect Wallet</button>
@@ -31,7 +32,7 @@
 
                 <div id="walletBalances" class="mt-3">
                     <h5>Your Wallet Balances:</h5>
-                    @if($balance)
+                    @if ($balance)
                         <ul>
                             <li>SOL: {{ $balance }} SOL</li> <!-- Số dư từ API -->
                             <!-- Thêm các loại token khác nếu cần -->
@@ -43,34 +44,39 @@
 
                 <!-- Hiển thị lịch sử giao dịch -->
                 <div id="transactionHistory" class="mt-3">
-                    <h5>Transaction History (Last 5):</h5>
-                    @if(count($transactions) > 0)
+                    <h5>Transaction History:</h5>
+                    @if (count($transactions) > 0)
                         <ul>
-                            @foreach($transactions as $transaction)
-                                <li>
-                                    <strong>Tx Hash:</strong> 
+                            @foreach ($transactions as $transaction)
+                                <li class="mb-3">
+                                    <strong>Tx Hash:</strong>
                                     <a href="https://solscan.io/tx/{{ $transaction['transactionHash'] }}" target="_blank">
                                         {{ $transaction['transactionHash'] }}
                                     </a>
                                     <br>
-                                    <strong>Sender:</strong> {{ $transaction['sender'] ?? 'Unknown' }}
+
+                                    <strong>Sender:</strong>
+                                    {{ $transaction['sender'] ?? 'Unknown' }}
                                     <br>
-                                    <strong>Receivers:</strong> 
-                                    @if(isset($transaction['receivers']) && count($transaction['receivers']) > 0)
+
+                                    <strong>Receivers:</strong>
+                                    @if (isset($transaction['receivers']) && count($transaction['receivers']) > 0)
                                         {{ implode(', ', $transaction['receivers']) }}
                                     @else
                                         Unknown
                                     @endif
                                     <br>
-                                    <strong>Amount:</strong> 
-                                    @if(isset($transaction['lamports']))
+
+                                    <strong>Amount:</strong>
+                                    @if (isset($transaction['lamports']))
                                         {{ number_format($transaction['lamports'] / 1000000000, 9) }} SOL
                                     @else
                                         N/A
                                     @endif
                                     <br>
-                                    <strong>Date:</strong> 
-                                    @if(isset($transaction['blockTime']))
+
+                                    <strong>Date:</strong>
+                                    @if (isset($transaction['blockTime']))
                                         {{ \Carbon\Carbon::parse($transaction['blockTime'])->toDateTimeString() }}
                                     @else
                                         N/A
@@ -82,7 +88,8 @@
                         <p>Không có giao dịch gần đây.</p>
                     @endif
                 </div>
-                
+
+
             </div>
         @endif
     </div>
