@@ -90,4 +90,5 @@ Route::controller(UserController::class)->middleware(['auth', 'user'])->group(fu
     Route::resource('user/wallet', WalletController::class);
     Route::resource('user/orders', OrderController::class);
     Route::resource('user/diemdanh', DiemdanhController::class);
+    Route::post('/diemdanh/makeup', [DiemdanhController::class, 'makeupAttendance'])->name('diemdanh.makeup');
 });

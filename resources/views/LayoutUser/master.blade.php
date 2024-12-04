@@ -11,7 +11,132 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-I5fwlQDtE5YPkGPrXQckgFdMUWdUJHEZ2r09Fz9zogTzNoL7fEYDQ5vFcN8K5Wfg" crossorigin="anonymous">
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
 
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Menu container */
+.menu-container {
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.menu-container .nav-profile-text {
+    padding: 10px;
+    background-color: #e9f5f9;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.menu-container .nav-profile-text:hover {
+    background-color: #d1eef1;
+}
+
+.img-profile {
+    border: 2px solid #4caf50;
+    margin-right: 10px;
+}
+
+.menu-container .menu {
+    padding-left: 0;
+}
+
+.menu-container .menu li {
+    list-style: none;
+}
+
+.menu-container .menu a {
+    color: #555;
+    font-weight: bold;
+    display: block;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.menu-container .menu a:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.menu-container .dropdown-btn {
+    border: none;
+    background: none;
+    font-weight: bold;
+    color: #555;
+    padding: 10px;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+}
+
+.menu-container .dropdown-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.menu-container .dropdown-content {
+    padding-left: 15px;
+    display: none;
+}
+
+.menu-container .dropdown-content li a {
+    font-weight: normal;
+    color: #777;
+    padding: 5px 0;
+}
+
+.menu-container .dropdown-content li a:hover {
+    color: #000;
+}
+
+/* Nút đăng xuất */
+.menu-container form button {
+    width: calc(100% - 20px);
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    color: white;
+    text-align: left;
+    padding: 10px;
+    background-color: #dc3545;
+    transition: background-color 0.3s;
+}
+
+.menu-container form button:hover {
+    background-color: #c82333;
+}
+
+/* Phần Content */
+.content-container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+}
+
+.alert {
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+    </style>
 
 </head>
 
