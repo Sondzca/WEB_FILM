@@ -64,7 +64,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{route('adminorders.index')}}">
                 <span class="menu-title">Đơn hàng</span>
                 <i class="mdi mdi-clipboard menu-icon"></i>
             </a>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminOrdersController;
 use App\Http\Controllers\AdminWalletController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -68,6 +69,7 @@ Route::controller(AdminController::class)
         Route::post('/admin/update', 'update')->name('admin.update');
 
         //route chức năng
+        Route::resource('admin/adminorders', AdminOrdersController::class);
         Route::resource('admin/Adminwallet', AdminWalletController::class);
         Route::resource('admin/categories', CategoryController::class);
         Route::resource('admin/tickets', TicketController::class);
