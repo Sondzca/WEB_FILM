@@ -82,15 +82,15 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/transaction">
-                <span class="menu-title">Tra cứu giao dịch</span>
-                <i class="mdi mdi-format-size menu-icon"></i>
+            <a class="nav-link" href="/adminexchange">
+                <span class="menu-title">Lịch sử đổi điểm</span>
+                <i class="mdi mdi-format-color-fill menu-icon"></i>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span class="menu-title">#</span>
-                <i class="mdi mdi-format-color-fill menu-icon"></i>
+            <a class="nav-link" href="/transaction">
+                <span class="menu-title">Tra cứu giao dịch</span>
+                <i class="mdi mdi-format-size menu-icon"></i>
             </a>
         </li>
     </ul>

@@ -12,6 +12,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-I5fwlQDtE5YPkGPrXQckgFdMUWdUJHEZ2r09Fz9zogTzNoL7fEYDQ5vFcN8K5Wfg" crossorigin="anonymous">
 
+    <script src="https://unpkg.com/@solana/web3.js@1.41.0/lib/index.iife.js"></script>
+    
     <style>
         body {
     font-family: 'Arial', sans-serif;
@@ -199,6 +201,7 @@
                 <li><a href="{{ route('wallet.index') }}" class="btn btn-light w-100 text-start">Kết nối ví</a></li>
                 <li><a href="{{ route('donmua.index') }}" class="btn btn-light w-100 text-start">Đơn Mua</a></li>
                 <li><a href="{{ route('diemdanh.index') }}" class="btn btn-light w-100 text-start">Điểm danh</a></li>
+                <li><a href="{{ route('exchange.index') }}" class="btn btn-light w-100 text-start">Đổi điểm</a></li>
                 <li><a href="{{ route('vecuaban.index') }}" class="btn btn-light w-100 text-start">Vé của tôi</a></li>
                 <li>
                     <form action="{{ route('logout') }}" method="POST">

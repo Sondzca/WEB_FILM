@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminExchangeController;
 use App\Http\Controllers\AdminOrdersController;
 use App\Http\Controllers\AdminWalletController;
 use App\Http\Controllers\CartController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DiemdanhController;
+use App\Http\Controllers\ExchangePointController;
 use App\Http\Controllers\ManagerUserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseController;
@@ -80,6 +82,8 @@ Route::controller(AdminController::class)
 
         Route::get('/transaction', [TransactionController::class, 'index']);
         Route::post('/transaction', [TransactionController::class, 'return']);
+
+        Route::get('/adminexchange', [AdminExchangeController::class, 'index']);
     });
 
 // Route cho User
@@ -96,14 +100,19 @@ Route::controller(UserController::class)
 
 
     //route chuc nang 
+    Route::resource('user/wallet', WalletController::class);
+
     Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
     Route::resource('user/carts', CartController::class);
-    Route::resource('user/wallet', WalletController::class);
     Route::resource('user/orders', OrderController::class);
+
     Route::resource('user/diemdanh', DiemdanhController::class);
     Route::post('/diemdanh/makeup', [DiemdanhController::class, 'makeupAttendance'])->name('diemdanh.makeup');
     Route::post('/diemdanh/exchange', [DiemdanhController::class, 'exchangePoints'])->name('diemdanh.exchange');
+
     Route::resource('user/donmua', PurchaseController::class);
     Route::resource('user/vecuaban', VecuabanController::class);
+
+    Route::resource('/user/exchange', ExchangePointController::class);
 });
 
