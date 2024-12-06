@@ -9,7 +9,7 @@ class AdminOrdersController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('user')->orderBy('created_at', 'desc')->paginate(10); // Hiển thị 10 đơn hàng mỗi trang
+        $orders = Order::with('user')->orderBy('created_at', 'desc')->paginate(5); // Hiển thị 10 đơn hàng mỗi trang
         return view('AdminOrders.index', compact('orders'));
     }
 
